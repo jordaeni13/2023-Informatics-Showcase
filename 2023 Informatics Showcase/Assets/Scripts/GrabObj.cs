@@ -45,8 +45,17 @@ public class GrabObj : MonoBehaviour
         objectInHand = collidingObject;
         collidingObject = null;
 
+        // If the object is a child of an inventory slot, detach it from the slot
+        if (objectInHand.transform.parent != null && objectInHand.transform.parent.CompareTag("InventorySlot"))
+        {
+            objectInHand.transform.SetParent(null, true);
+        }
+
         var joint = AddFixedJoint();
         joint.connectedBody = objectInHand.GetComponent<Rigidbody>();
+
+        // Make the object's collider a trigger while it's being held
+        objectInHand.GetComponent<Collider>().isTrigger = true;
         Debug.Log("Grabbed!");
     }
 
@@ -54,6 +63,8 @@ public class GrabObj : MonoBehaviour
     {
         if (GetComponent<FixedJoint>())
         {
+            // Make the object's collider solid again when it's released
+            objectInHand.GetComponent<Collider>().isTrigger = false;
             GetComponent<FixedJoint>().connectedBody = null;
             Destroy(GetComponent<FixedJoint>());
             objectInHand = null;
