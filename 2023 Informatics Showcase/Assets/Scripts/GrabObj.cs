@@ -14,21 +14,24 @@ public class GrabObj : MonoBehaviour
     {
         return;
     }
-    collidingObject = col.gameObject;
+    Debug.Log(collidingObject)
 }
 
     public void OnTriggerEnter(Collider other)
     {
+        Debug.Log("Trigger Enter");
         SetCollidingObject(other);
     }
 
     public void OnTriggerStay(Collider other)
     {
+        Debug.Log("Trigger Staying");
         SetCollidingObject(other);
     }
 
     public void OnTriggerExit(Collider other)
     {
+        Debug.Log("Trigger Exit");
         if (!collidingObject)
         {
             return;
@@ -38,6 +41,7 @@ public class GrabObj : MonoBehaviour
 
     private void GrabObject()
     {
+
         objectInHand = collidingObject;
         collidingObject = null;
     }
@@ -54,8 +58,10 @@ public class GrabObj : MonoBehaviour
 
     void Update()
     {
+
         if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand) && collidingObject)
         {
+            Debug.Log("Tried to Grab!");
             GrabObject();
         }
         else if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand) && objectInHand)
