@@ -83,12 +83,12 @@ public class GrabObj : MonoBehaviour
     void Update()
     {
 
-        if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand) && collidingObject)
+        if (SteamVR_Actions.htc_viu.viu_press_02.GetStateDown(SteamVR_Input_Sources.RightHand) && collidingObject)
         {
             Debug.Log("Tried to Grab!");
             GrabObject();
         }
-        else if (SteamVR_Actions.htc_viu.viu_press_33.GetStateUp(SteamVR_Input_Sources.RightHand) && objectInHand)
+        else if (SteamVR_Actions.htc_viu.viu_press_02.GetStateUp(SteamVR_Input_Sources.RightHand) && objectInHand)
         {
             Debug.Log("Tried to throw!");
             ReleaseObject();
