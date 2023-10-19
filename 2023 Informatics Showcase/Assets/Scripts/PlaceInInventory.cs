@@ -9,6 +9,8 @@ public class PlaceInInventory : MonoBehaviour
         if (other.gameObject.CompareTag("InventorySlot") && GrabObj.objectInHand)
         {
             GrabObj.objectInHand.transform.SetParent(other.transform, false);
+            GrabObj.objectInHand.transform.localPosition = Vector3.zero;
+            GrabObj.objectInHand.transform.localRotation = Quaternion.identity;
             GrabObj.objectInHand.GetComponent<Rigidbody>().isKinematic = true;
             FixedJoint joint = GrabObj.objectInHand.GetComponent<FixedJoint>();
             if (joint)
