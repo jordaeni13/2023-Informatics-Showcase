@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class PlaceInInventory : MonoBehaviour
 {
-    public GameObject objectInHand; // Assign in GrabObject script
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("InventorySlot") && objectInHand)
+        if (other.gameObject.CompareTag("InventorySlot") && GrabObj.objectInHand)
         {
-            objectInHand.transform.SetParent(other.transform, false);
-            objectInHand = null;
+            GrabObj.objectInHand.transform.SetParent(other.transform, false);
+            GrabObj.objectInHand = null;
         }
     }
 }

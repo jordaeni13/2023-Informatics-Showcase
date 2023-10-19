@@ -5,17 +5,18 @@ using Valve.VR;
 
 public class GrabObj : MonoBehaviour
 {
-    private GameObject collidingObject; 
-    private GameObject objectInHand; 
+    private GameObject collidingObject;  //null
+    public static GameObject objectInHand; //null
 
     private void SetCollidingObject(Collider col)
-{
-    if (collidingObject || !col.GetComponent<Rigidbody>() || !col.gameObject.CompareTag("Grabbable"))
     {
-        return;
+        if (collidingObject || !col.GetComponent<Rigidbody>() || !col.gameObject.CompareTag("Grabbable"))
+        {
+            return;
+        }
+        collidingObject = col.gameObject;
+        Debug.Log(collidingObject);
     }
-    Debug.Log(collidingObject)
-}
 
     public void OnTriggerEnter(Collider other)
     {
@@ -41,9 +42,12 @@ public class GrabObj : MonoBehaviour
 
     private void GrabObject()
     {
-
         objectInHand = collidingObject;
         collidingObject = null;
+
+        var joint = AddFixedJoint();
+        joint.connectedBody = objectInHand.GetComponent<Rigidbody>();
+        Debug.Log("Grabbed!");
     }
 
     private void ReleaseObject()
@@ -56,6 +60,13 @@ public class GrabObj : MonoBehaviour
         }
     }
 
+    private FixedJoint AddFixedJoint()
+    {
+        FixedJoint fx = gameObject.AddComponent<FixedJoint>();
+        fx.breakForce = 20000;
+        fx.breakTorque = 20000;
+        return fx;
+    }
     void Update()
     {
 
@@ -66,6 +77,7 @@ public class GrabObj : MonoBehaviour
         }
         else if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand) && objectInHand)
         {
+            Debug.Log("Tried to throw!");
             ReleaseObject();
         }
     }
