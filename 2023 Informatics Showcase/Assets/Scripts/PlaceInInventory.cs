@@ -8,6 +8,13 @@ public class PlaceInInventory : MonoBehaviour
     {
         if (other.gameObject.CompareTag("InventorySlot") && GrabObj.objectInHand)
         {
+            //Check if the inventory slot already has a child
+            if (other.transform.childCount > 1) {
+                //If it does, don't place the item
+
+                return;
+            }
+
             GrabObj.objectInHand.transform.SetParent(other.transform, false);
             GrabObj.objectInHand.transform.localPosition = Vector3.zero;
             GrabObj.objectInHand.transform.localRotation = Quaternion.identity;
