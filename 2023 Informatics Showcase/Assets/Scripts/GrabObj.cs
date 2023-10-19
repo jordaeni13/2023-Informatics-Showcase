@@ -56,6 +56,8 @@ public class GrabObj : MonoBehaviour
 
         // Make the object's collider a trigger while it's being held
         objectInHand.GetComponent<Collider>().isTrigger = true;
+
+        GrabObj.objectInHand.GetComponent<Rigidbody>().isKinematic = false;
         Debug.Log("Grabbed!");
     }
 
@@ -86,7 +88,7 @@ public class GrabObj : MonoBehaviour
             Debug.Log("Tried to Grab!");
             GrabObject();
         }
-        else if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand) && objectInHand)
+        else if (SteamVR_Actions.htc_viu.viu_press_33.GetStateUp(SteamVR_Input_Sources.RightHand) && objectInHand)
         {
             Debug.Log("Tried to throw!");
             ReleaseObject();
