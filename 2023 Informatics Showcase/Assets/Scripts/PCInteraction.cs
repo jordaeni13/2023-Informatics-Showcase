@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 
-public class PCInteration : MonoBehaviour
+public class PCInteraction : MonoBehaviour
 {
+    private AudioSource tada;
     public bool isOpened;
-    public bool isColliding;
-    public GameObject collidingObject;
-    public GameObject pcOpened;
-    public GameObject pcClosed;
+    public static bool isColliding;
+    public static GameObject collidings;
+    public static GameObject pcOpened;
+    public static GameObject pcClosed;
     public bool isSSD;
     // Start is called before the first frame update
     void Start()
     {
-        collidingObject = null;
+        tada = GetComponent<AudioSource>();
+        collidings = null;
         isSSD = false;
         Debug.Log("Hello PC");
         isOpened = false;
@@ -26,18 +28,24 @@ public class PCInteration : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        print("isColliding : " + isColliding);
         if(isColliding)
         {
-            isSSD = collidingObject.CompareTag("SSD") ? true : false;
+            isSSD = collidings.CompareTag("SSD") ? true : false;
             if (SteamVR_Input.GetStateDown("GrabPinch", SteamVR_Input_Sources.LeftHand))
             {
                 if(isSSD)
                 {
+                    if(GrabObj.objectInHand.transform.parent.CompareTag("InventorySlot"))
+                    {
+                        GrabObj.objectInHand.SetActive(false);
+                        playSound(tada, false);
+                    }
                     Debug.Log("SSD!");
                 }
                 else
                 {
-                    Debug.Log("NOT SSD : " + collidingObject.tag);
+                    Debug.Log("NOT SSD : " + collidings.tag);
                 }
             }
         }
@@ -49,15 +57,13 @@ public class PCInteration : MonoBehaviour
         pcClosed.SetActive(!state);
     }
 
-    void OnCollisionEnter(Collision col)
-    {
-        collidingObject = col.gameObject;
-        isColliding = true;
-    }
 
-    void OnCollisionExit(Collision col)
+    
+    void playSound(AudioSource audioPlayer, bool loop)
     {
-        collidingObject = null;
-        isColliding = false;
+        audioPlayer.Stop();
+        audioPlayer.loop = loop;
+        audioPlayer.time = 0;
+        audioPlayer.Play();
     }
 }

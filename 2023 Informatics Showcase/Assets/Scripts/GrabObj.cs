@@ -15,7 +15,7 @@ public class GrabObj : MonoBehaviour
             return;
         }
         collidingObject = col.gameObject;
-        Debug.Log(collidingObject);
+        //Debug.Log(collidingObject);
     }
 
     public void OnTriggerEnter(Collider other)
@@ -26,7 +26,7 @@ public class GrabObj : MonoBehaviour
 
     public void OnTriggerStay(Collider other)
     {
-        Debug.Log("Trigger Staying");
+        ///Debug.Log("Trigger Staying");
         SetCollidingObject(other);
     }
 
@@ -93,5 +93,17 @@ public class GrabObj : MonoBehaviour
             Debug.Log("Tried to throw!");
             ReleaseObject();
         }
+    }
+    void OnCollisionEnter(Collision col)
+    {
+            PCInteraction.collidings = col.gameObject;
+            PCInteraction.isColliding = true;
+            Debug.Log(col.gameObject.name);
+    }
+
+    void OnCollisionExit(Collision col)
+    {
+            PCInteraction.collidings = null;
+            PCInteraction.isColliding = false;
     }
 }
