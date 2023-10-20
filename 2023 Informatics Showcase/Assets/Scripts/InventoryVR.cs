@@ -9,7 +9,7 @@ public class InventoryVR : MonoBehaviour
 {
     public GameObject Inventory;
     public GameObject Anchor;
-    bool UIActive;
+    public bool UIActive;
 
     private void Start()
     {
