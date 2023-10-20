@@ -6,6 +6,11 @@ TagManager:
   tags:
   - InventorySlot
   - Grabbable
+  - Wrong Parts
+  - SSD
+  - CPU
+  - RAM
+  - GPU
   layers:
   - Default
   - TransparentFX
