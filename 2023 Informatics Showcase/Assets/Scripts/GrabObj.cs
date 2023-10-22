@@ -94,16 +94,4 @@ public class GrabObj : MonoBehaviour
             ReleaseObject();
         }
     }
-    void OnCollisionEnter(Collision col)
-    {
-            PCInteraction.collidings = col.gameObject;
-            PCInteraction.isColliding = true;
-            Debug.Log(col.gameObject.name);
-    }
-
-    void OnCollisionExit(Collision col)
-    {
-            PCInteraction.collidings = null;
-            PCInteraction.isColliding = false;
-    }
 }
