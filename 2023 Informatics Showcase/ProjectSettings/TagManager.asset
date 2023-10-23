@@ -10,6 +10,7 @@ TagManager:
   - CPU
   - RAM
   - GPU
+  - trash
   layers:
   - Default
   - TransparentFX

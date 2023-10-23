@@ -65,7 +65,7 @@ public class GameRunner : MonoBehaviour
         }
         if(status == 1)
         {
-            if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.LeftHand) && SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
+            if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
             {
                 TextHandler.addActionTexts(Help.started, Help.startedTime);
                 status = 999;
@@ -78,6 +78,8 @@ public class GameRunner : MonoBehaviour
         if(status == 0)
         {
             //오디오 재생 추가
+            GameObject.Find("speaker").GetComponent<AudioSource>().Play();
+            status = 1;
         }
         if(status == 1)
         {
@@ -94,6 +96,7 @@ public class GameRunner : MonoBehaviour
         if(status == 1)
         {
             getReHelp();
+            if (TextHandler.queue.Count == 0) status = 999; // 디버깅용
         }
     }
     void FindParts()
@@ -102,6 +105,7 @@ public class GameRunner : MonoBehaviour
         {
             TextHandler.addActionTexts(Help.findParts, Help.findPartsTime);
             status = 1;
+            FindObjects.enableFind = true;
         }
         if(status == 1)
         {
@@ -148,7 +152,7 @@ namespace Texts
 {
     public class Help
     {
-        public static string[] starter = {"좌측 트리거를 이용해 인벤토리를 열어보세요", "" , "우측 측면 버튼을 이용해 물체를 잡아보세요", "" , "도움말은 여기 나타나며", "",  "다시 보고 싶다면 촤측 측면 버튼을 눌러주세요" , "준비가 되었다면 좌측 트리거와 우측 트리거를 동시에 눌러봅시다"};
+        public static string[] starter = {"좌측 트리거를 이용해 인벤토리를 열어보세요", "" , "우측 측면 버튼을 이용해 물체를 잡아보세요", "" , "도움말은 여기 나타나며", "",  "다시 보고 싶다면 촤측 측면 버튼을 눌러주세요" , "준비가 되었다면 우측 트리거를 눌러봅시다"};
         public static float[] starterTime = {3, 3, 3, 3, 3, 1, 3};
         public static string[] started = { "좋습니다", "", "이제 시작해볼까요?" };
         public static float[] startedTime = { 3, 1, 3 };

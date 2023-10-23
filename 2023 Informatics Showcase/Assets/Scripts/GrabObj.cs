@@ -10,7 +10,7 @@ public class GrabObj : MonoBehaviour
 
     private void SetCollidingObject(Collider col)
     {
-        if (collidingObject || !col.GetComponent<Rigidbody>() || !col.gameObject.CompareTag("Grabbable"))
+        if (collidingObject || !col.GetComponent<Rigidbody>() || !(col.gameObject.CompareTag("Grabbable") || col.gameObject.CompareTag("trash")))
         {
             return;
         }
