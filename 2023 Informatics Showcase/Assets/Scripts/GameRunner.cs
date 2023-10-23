@@ -65,6 +65,11 @@ public class GameRunner : MonoBehaviour
         }
         if(status == 1)
         {
+            if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.LeftHand) && SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
+            {
+                TextHandler.addActionTexts(Help.started, Help.startedTime);
+                status = 999;
+            }
             getReHelp();
         }
     }
@@ -140,8 +145,10 @@ namespace Texts
 {
     public class Help
     {
-        public static string[] starter = {"좌측 트리거 키를 이용해 인벤토리를 열어보세요", "" , "우측 엄지 키를 이용해 물체를 잡아보세요", "" , "도움말은 여기 나타나며", "",  "다시 보고 싶다면 왼쪽 엄지 버튼을 눌러주세요" };
+        public static string[] starter = {"좌측 트리거를 이용해 인벤토리를 열어보세요", "" , "우측 측면 버튼을 이용해 물체를 잡아보세요", "" , "도움말은 여기 나타나며", "",  "다시 보고 싶다면 촤측 측면 버튼을 눌러주세요" , "준비가 되었다면 좌측 트리거와 우측 트리거를 동시에 눌러봅시다"};
         public static float[] starterTime = {3, 3, 3, 3, 3, 1, 3};
+        public static string[] started = { "좋습니다", "", "이제 시작해볼까요?" };
+        public static float[] startedTime = { 3, 1, 3 };
         public static string interactTeacher = "1층 교무실 앞에 김민철 선생님을 찾아 대화하세요";
         public static float interactTeacherTime = 5;
         public static string[] findParts = { "이제 부품을 찾아보세요" , "", "SSD를 찾아봅시다" };

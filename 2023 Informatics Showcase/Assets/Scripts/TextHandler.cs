@@ -45,7 +45,7 @@ public class TextHandler : MonoBehaviour
     {
         for (int i = 0; i < txts.Length; i++)
         {
-            addActionText(txts[i], show_times[i]);
+            addActionText(txts[i], i < show_times.Length ? show_times[i] : 3);
         }
     }
     public static void updateText()
