@@ -21,13 +21,20 @@ public class FindObjects : MonoBehaviour
             GameObject trash = FindGameObjectInChildWithTag(this.gameObject, "trash");
             if(trash)
             {
-
+                getOut(trash);
             }
         }
     }
-    void ơ(GameObject trash)
+    void getOut(GameObject trash)
     {
         //trash.GetComponent<Rigidbody>;
+        Vector3 camPos = Camera.current.transform.position;
+        Vector3 handPos = GameObject.Find("RightHand").transform.position;
+        if (trash.transform.parent.CompareTag("InventorySlot"))
+        {
+            trash.transform.SetParent(null, true);
+        }
+        trash.GetComponent<Rigidbody>().velocity = handPos - camPos;
     }
 
     public static GameObject FindGameObjectInChildWithTag(GameObject parent, string tag)
