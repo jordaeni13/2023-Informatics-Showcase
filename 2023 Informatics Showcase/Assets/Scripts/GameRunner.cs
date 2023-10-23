@@ -9,12 +9,14 @@ public class GameRunner : MonoBehaviour
 {
     private float time;
     private int status = 0;
-    private int seq = 0;
+    private int seq = -1;
     void Start()
     {
         time = 0;
+        status = 999;
+        seq = -1;
         Debug.Log("Game Started");
-        TextHandler.showActionText("Game Started", 5.0f);
+        TextHandler.addActionText("Game Started", 5.0f);
         
     }
 
@@ -58,15 +60,12 @@ public class GameRunner : MonoBehaviour
     {
         if(status == 0)
         {
-            for (int i = 0; i < Help.starter.Length; i++)
-            {
-                TextHandler.showActionText(Help.starter[i], Help.starterTime[i]);
-            }
+            TextHandler.addActionTexts(Help.starter, Help.starterTime);
             status = 1;
         }
         if(status == 1)
         {
-            if (SteamVR_Actions.htc_viu.viu_press_02.GetStateDown(SteamVR_Input_Sources.LeftHand) && TextHandler.queue.Count == 0) status = 0;
+            getReHelp();
         }
     }
     void BroadCast()
@@ -81,44 +80,36 @@ public class GameRunner : MonoBehaviour
     {
         if(status == 0)
         {
-            TextHandler.showActionText(Help.interactTeacher,Help.interactTeacherTime);
+            TextHandler.addActionText(Help.interactTeacher,Help.interactTeacherTime);
             status = 1;
         }
         if(status == 1)
         {
-            if (SteamVR_Actions.htc_viu.viu_press_02.GetStateDown(SteamVR_Input_Sources.LeftHand)) status = 0; //도움말 다시
-
-            //waitForInteract
+            getReHelp();
         }
     }
     void FindParts()
     {
         if(status == 0)
         {
-            for(int i = 0; i < Help.findParts.Length; i++)
-            {
-                TextHandler.showActionText(Help.findParts[i], Help.findPartsTime[i]);
-            }
+            TextHandler.addActionTexts(Help.findParts, Help.findPartsTime);
             status = 1;
         }
         if(status == 1)
         {
-            if (SteamVR_Actions.htc_viu.viu_press_02.GetStateDown(SteamVR_Input_Sources.LeftHand)) status = 0; //도움말 다시
+            getReHelp();
         }
     }
     void Assemble()
     {
         if(status == 0)
         {
-            for(int i = 0; i < Help.assemble.Length; i++)
-            {
-                TextHandler.showActionText(Help.assemble[i], Help.assembleTime[i]);
-            }
+            TextHandler.addActionTexts(Help.assemble, Help.assembleTime);
             status = 1;
         }
         if (status == 1)
         {
-            if (SteamVR_Actions.htc_viu.viu_press_02.GetStateDown(SteamVR_Input_Sources.LeftHand)) status = 0; //도움말 다시
+            getReHelp();
         }
     }
 
@@ -126,10 +117,7 @@ public class GameRunner : MonoBehaviour
     {
         if (status == 0)
         {
-            for (int i = 0; i < Help.install.Length; i++)
-            {
-                TextHandler.showActionText(Help.install[i], Help.installTime[i]);
-            }
+            TextHandler.addActionTexts(Help.install, Help.installTime);
             status = 1;
         }
         if (status == 1)
@@ -140,6 +128,11 @@ public class GameRunner : MonoBehaviour
     void GoHome()
     {
 
+    }
+
+    void getReHelp()
+    {
+        if (SteamVR_Actions.htc_viu.viu_press_02.GetStateDown(SteamVR_Input_Sources.LeftHand)) status = 0;
     }
 }
 

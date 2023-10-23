@@ -32,14 +32,21 @@ public class TextHandler : MonoBehaviour
         updateText();
         timeCounter();
     }
-    public static void showActionText(string txt, float show_time)
+    public static void addActionText(string txt, float show_time)
     {
         Debug.Log("Msg :" + txt);
         if (lastTime < time) lastTime = time;
         SingleParagraph temp = new SingleParagraph(txt, lastTime + show_time);
         lastTime = lastTime + show_time;
         queue.Add(temp);
-        Debug.Log("txt : " + queue[queue.Count-1].text + " for " + queue[queue.Count-1].validTime);
+    }
+
+    public static void addActionTexts(string[] txts, float[] show_times)
+    {
+        for (int i = 0; i < txts.Length; i++)
+        {
+            addActionText(txts[i], show_times[i]);
+        }
     }
     public static void updateText()
     {
