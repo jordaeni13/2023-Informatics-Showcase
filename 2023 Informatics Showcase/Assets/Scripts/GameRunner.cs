@@ -14,7 +14,7 @@ public class GameRunner : MonoBehaviour
     {
         time = 0;
         Debug.Log("Game Started");
-        TextHandler.showActionText("Game Started", 2.0f);
+        TextHandler.showActionText("Game Started", 5.0f);
         
     }
 
@@ -26,6 +26,7 @@ public class GameRunner : MonoBehaviour
         {
             seq++;
             status = 0;
+            Debug.Log("seq = " + seq);
         }
         switch(seq)
         {
@@ -61,10 +62,11 @@ public class GameRunner : MonoBehaviour
             {
                 TextHandler.showActionText(Help.starter[i], Help.starterTime[i]);
             }
+            status = 1;
         }
         if(status == 1)
         {
-            if (SteamVR_Actions.htc_viu.viu_press_02.GetStateDown(SteamVR_Input_Sources.LeftHand)) status = 0;
+            if (SteamVR_Actions.htc_viu.viu_press_02.GetStateDown(SteamVR_Input_Sources.LeftHand) && TextHandler.queue.Count == 0) status = 0;
         }
     }
     void BroadCast()
@@ -145,8 +147,8 @@ namespace Texts
 {
     public class Help
     {
-        public static string[] starter = { };
-        public static float[] starterTime = { };
+        public static string[] starter = {"좌측 트리거 키를 이용해 인벤토리를 열어보세요", "" , "우측 엄지 키를 이용해 물체를 잡아보세요", "" , "도움말은 여기 나타나며", "",  "다시 보고 싶다면 왼쪽 엄지 버튼을 눌러주세요" };
+        public static float[] starterTime = {3, 3, 3, 3, 3, 1, 3};
         public static string interactTeacher = "1층 교무실 앞에 김민철 선생님을 찾아 대화하세요";
         public static float interactTeacherTime = 5;
         public static string[] findParts = { "이제 부품을 찾아보세요" , "", "SSD를 찾아봅시다" };

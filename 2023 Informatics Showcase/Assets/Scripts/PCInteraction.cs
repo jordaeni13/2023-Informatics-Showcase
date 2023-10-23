@@ -7,14 +7,14 @@ public class PCInteraction : MonoBehaviour
 {
     public bool isOpened;
     public static bool isColliding;
-    public static List<GameObject> collidings;
+    public static List<GameObject> collidings = new List<GameObject>();
     public static GameObject pcOpened;
     public static GameObject pcClosed;
     public bool isSSD;
     // Start is called before the first frame update
     void Start()
     {
-        collidings = new List<GameObject>();
+        collidings.Clear();
         isSSD = false;
         Debug.Log("Hello PC");
         isOpened = false;

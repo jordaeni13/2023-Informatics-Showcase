@@ -4,40 +4,48 @@ using UnityEngine;
 
 public class TextHandler : MonoBehaviour
 {
-    private static float time = 0;
-    private static float lastTime = 0;
-    private static int count = 0;
-    private static bool showing;
+    public static float time = 0;
+    public static float lastTime = 0;
+    public static int count = 0;
+    public static bool showing = false;
     public static float showTime = 0;
-    public static string helperOnInv;
-    public static string helper;
-    public static List<SingleParagraph> queue;
+    public static string helperOnInv = "";
+    public static string helper = "";
+    public static List<SingleParagraph> queue = new List<SingleParagraph>();
     void Start()
     {
         showing = false;
         showTime = 0;
         helperOnInv = "";
         helper = "";
-        queue = new List<SingleParagraph>();
+        lastTime = 0;
+        time = 0;
+        count = 0;
+        
+        queue.Clear();
     }
 
     void Update()
     {
+        //Debug.Log(queue.Count);
         time += Time.deltaTime;
         updateText();
         timeCounter();
     }
     public static void showActionText(string txt, float show_time)
     {
+        Debug.Log("Msg :" + txt);
         if (lastTime < time) lastTime = time;
         SingleParagraph temp = new SingleParagraph(txt, lastTime + show_time);
         lastTime = lastTime + show_time;
         queue.Add(temp);
+        Debug.Log("txt : " + queue[queue.Count-1].text + " for " + queue[queue.Count-1].validTime);
     }
-    public void updateText()
+    public static void updateText()
     {
         if (showing)
         {
+            //Debug.Log("showing");
             if (time >= showTime)
             {
                 helperOnInv = helper;
@@ -47,21 +55,23 @@ public class TextHandler : MonoBehaviour
         }
         else
         {
-            if(queue.Count > 0)
+            //Debug.Log("!showing");
+            if (queue.Count != 0)
             {
                 showing = true;
                 helperOnInv = "";
                 helper = queue[0].text;
                 showTime = queue[0].validTime;
+                Debug.Log("showing" + helper + "for" + showTime + "sec");
                 queue.RemoveAt(0);
             }
         }
     }
-    public void timeCounter()
+    public static void timeCounter()
     {
         if (time >= count)
         {
-            Debug.Log(time);
+            //Debug.Log(time);
             count++;
         }
     }
