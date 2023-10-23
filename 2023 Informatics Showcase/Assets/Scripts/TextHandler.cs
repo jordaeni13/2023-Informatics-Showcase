@@ -69,7 +69,7 @@ public class TextHandler : MonoBehaviour
                 helperOnInv = "";
                 helper = queue[0].text;
                 showTime = queue[0].validTime;
-                Debug.Log("showing" + helper + "for" + showTime + "sec");
+                Debug.Log("Showing " + helper + " for " + (showTime - time) + " secs");
                 queue.RemoveAt(0);
             }
         }

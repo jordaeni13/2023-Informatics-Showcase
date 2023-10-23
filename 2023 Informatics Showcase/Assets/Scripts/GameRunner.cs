@@ -78,6 +78,9 @@ public class GameRunner : MonoBehaviour
         if(status == 0)
         {
             //오디오 재생 추가
+        }
+        if(status == 1)
+        {
             status = 999;
         }
     }
