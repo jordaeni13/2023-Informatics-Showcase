@@ -34,7 +34,7 @@ public class TextHandler : MonoBehaviour
     }
     public static void addActionText(string txt, float show_time)
     {
-        Debug.Log("Msg :" + txt);
+        //Debug.Log("Msg :" + txt);
         if (lastTime < time) lastTime = time;
         SingleParagraph temp = new SingleParagraph(txt, lastTime + show_time);
         lastTime = lastTime + show_time;

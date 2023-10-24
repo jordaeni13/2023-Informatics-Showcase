@@ -65,11 +65,11 @@ public class GameRunner : MonoBehaviour
         }
         if(status == 1)
         {
-            if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
-            {
-                TextHandler.addActionTexts(Help.started, Help.startedTime);
-                status = 999;
-            }
+            if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand) && TextHandler.queue.Count == 0)
+                {
+                    TextHandler.addActionTexts(Help.started, Help.startedTime);
+                    status = 999;
+                }
             getReHelp();
         }
     }
@@ -83,7 +83,7 @@ public class GameRunner : MonoBehaviour
         }
         if(status == 1)
         {
-            status = 999;
+            if(TextHandler.queue.Count == 0) status = 999;
         }
     }
     void InteractWithTeacher()
@@ -109,6 +109,11 @@ public class GameRunner : MonoBehaviour
         }
         if(status == 1)
         {
+            if(FindObjects.successFind)
+            {
+                TextHandler.addActionText("다 찾았네요!", 3);
+                status = 999;
+            }
             getReHelp();
         }
     }
@@ -118,6 +123,7 @@ public class GameRunner : MonoBehaviour
         {
             TextHandler.addActionTexts(Help.assemble, Help.assembleTime);
             status = 1;
+            PCInteraction.pcInteractionEnabled = true;
         }
         if (status == 1)
         {
@@ -144,7 +150,7 @@ public class GameRunner : MonoBehaviour
 
     void getReHelp()
     {
-        if (SteamVR_Actions.htc_viu.viu_press_02.GetStateDown(SteamVR_Input_Sources.LeftHand)) status = 0;
+        if (SteamVR_Actions.htc_viu.viu_press_02.GetStateDown(SteamVR_Input_Sources.LeftHand) && TextHandler.queue.Count == 0) status = 0;
     }
 }
 

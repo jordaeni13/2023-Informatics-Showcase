@@ -20,7 +20,7 @@ public class GrabObj : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Trigger Enter");
+        //Debug.Log("Trigger Enter");
         SetCollidingObject(other);
     }
 
@@ -32,7 +32,7 @@ public class GrabObj : MonoBehaviour
 
     public void OnTriggerExit(Collider other)
     {
-        Debug.Log("Trigger Exit");
+        //Debug.Log("Trigger Exit");
         if (!collidingObject)
         {
             return;
@@ -58,7 +58,7 @@ public class GrabObj : MonoBehaviour
         objectInHand.GetComponent<Collider>().isTrigger = true;
 
         GrabObj.objectInHand.GetComponent<Rigidbody>().isKinematic = false;
-        Debug.Log("Grabbed!");
+        //Debug.Log("Grabbed!");
     }
 
     private void ReleaseObject()

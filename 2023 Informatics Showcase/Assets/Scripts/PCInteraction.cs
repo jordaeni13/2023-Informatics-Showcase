@@ -5,37 +5,96 @@ using Valve.VR;
 
 public class PCInteraction : MonoBehaviour
 {
-    public bool isOpened;
-    public static bool isColliding;
+    public static bool pcInteractionEnabled = false;
+    public static bool pcInteratcionSuccess = false;
+    public bool isOpened = false;
+    public static bool isColliding = false;
     public static List<GameObject> collidings = new List<GameObject>();
     public static GameObject pcOpened;
     public static GameObject pcClosed;
-    public bool isSSD;
+    public static GameObject insertedSSD;
+    public static int doneJobs = 0;
+    public bool isSSD = false;
+    public bool isMessageDone = false;
+    public SteamVR_Action_Vibration hapticAction;
+
+    public enum JobsToBeDone
+    {
+        openPC = 1,
+        insertSSD = 2,
+        insertUSB = 4
+    }
     // Start is called before the first frame update
     void Start()
     {
         collidings.Clear();
         isSSD = false;
+        doneJobs = 0;
         Debug.Log("Hello PC");
         isOpened = false;
-        pcOpened = GameObject.Find("PC_Opened").gameObject;
-        pcClosed = GameObject.Find("PC_Closed").gameObject;
-        ChangePCState(isOpened);
+        pcInteractionEnabled = false;
+        isMessageDone = false;
+        pcInteratcionSuccess = false;
+        pcOpened = GameObject.Find("PC_Opened");
+        pcClosed = GameObject.Find("PC_Closed");
+        insertedSSD = GameObject.Find("980");
+        pcOpened.SetActive(true);
+        pcClosed.SetActive(true);
+        insertedSSD.SetActive(false);
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(hasTag("SSD"))
+        if (pcInteractionEnabled)
         {
-            isSSD = true;
-            Debug.Log("SSD collided!");
-            if(GameObject.Find("980Pro").transform.parent.CompareTag("InventorySlot"))
+            if (GrabObj.objectInHand == pcClosed && doneJobs == 0)
             {
-
+                ReleaseObjectWithDisable();
+                pcClosed.SetActive(false);
+                setJobDone(JobsToBeDone.openPC);
             }
-        }
+            if(doneJobs == 0x1)
+            {
+                if (hasTag("SSD"))
+                {
+                    if (!isSSD)
+                    {
+                        Debug.Log("SSD collided!");
+                    }
+                    isSSD = true;
 
+                    if(GrabObj.objectInHand.name == "980Pro")
+                    {
+                        if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
+                        {
+                            setJobDone(JobsToBeDone.insertSSD);
+                            Debug.Log("SSD Inserted");
+                            TextHandler.addActionText("장", 0.5f);
+                            TextHandler.addActionText("장착", 0.5f);
+                            TextHandler.addActionText("장착완", 0.5f);
+                            TextHandler.addActionText("장착완료", 5f);
+                            ReleaseObjectWithDisable();
+                        }
+                        else
+                        {
+                            if (!isMessageDone)
+                            {
+                                TextHandler.addActionText("이제 우측 트리거를 누르세요!", 3);
+                                isMessageDone = true;
+                            }
+                        }
+                    }
+                }
+            }
+            if(doneJobs == 0x3)
+            {
+                pcInteratcionSuccess = true;
+                pcInteractionEnabled = false;
+            }
+
+        }
     }
 
     void ChangePCState(bool state)
@@ -44,9 +103,11 @@ public class PCInteraction : MonoBehaviour
         pcClosed.SetActive(!state);
     }
 
+    /*
     void OnCollisionEnter(Collision collision)
     {
-        if(!collision.collider.GetComponent<Rigidbody>() || collision.collider.gameObject.CompareTag("Grabbable"))
+        Debug.Log(collision.collider.gameObject.name);
+        if (!collision.collider.GetComponent<Rigidbody>() || collision.collider.gameObject.CompareTag("Grabbable"))
         {
             return;
         }
@@ -64,12 +125,27 @@ public class PCInteraction : MonoBehaviour
         }
         deleteCollsion(collision.collider);
     }
-    void addCollision(Collider collision)
+    */
+
+    private void OnTriggerEnter(Collider other)
     {
-        collidings.Add(collision.gameObject);
+        if (!other.gameObject.GetComponent<Rigidbody>() || other.gameObject.CompareTag("Grabbable")) return;
+        addCollision(other);
     }
 
-    void deleteCollsion(Collider collision)
+    private void OnTriggerExit(Collider other)
+    {
+        if (!other.gameObject.GetComponent<Rigidbody>() || other.gameObject.CompareTag("Grabbable")) return;
+        deleteCollision(other);
+    }
+    void addCollision(Collider collision)
+    {
+        Debug.Log(collision.gameObject.name);
+        collidings.Add(collision.gameObject);
+        hapticAction.Execute(0, 150, 75, 0.1f, SteamVR_Input_Sources.RightHand);
+    }
+
+    void deleteCollision(Collider collision)
     {
         collidings.Remove(collision.gameObject);
     }
@@ -82,4 +158,30 @@ public class PCInteraction : MonoBehaviour
         return false;
     }
 
+    bool jobCheck(JobsToBeDone job)
+    {
+        return (doneJobs & (int)job) == (int)job;
+    }
+    bool jobCheck(JobsToBeDone job1, JobsToBeDone job2)
+    {
+        return ((doneJobs & (int)job1) == (int)job1) && ((doneJobs & (int)job2) == (int)job2);
+    }
+
+    void setJobDone(JobsToBeDone job)
+    {
+        doneJobs |= (int)job;
+        Debug.Log("DoneJobs : " + doneJobs);
+    }
+    private void ReleaseObjectWithDisable()
+    {
+        if (GetComponent<FixedJoint>())
+        {
+            GrabObj.objectInHand.GetComponent<Collider>().isTrigger = false;
+            GetComponent<FixedJoint>().connectedBody = null;
+            Destroy(GetComponent<FixedJoint>());
+            GrabObj.objectInHand.SetActive(false);
+            GrabObj.objectInHand.GetComponent<Transform>().position = new Vector3(1000, 1000, 1000);
+            GrabObj.objectInHand = null;
+        }
+    }
 }
