@@ -18,6 +18,7 @@ public class PCInteraction : MonoBehaviour
     public bool isMessageDone = false;
     public SteamVR_Action_Vibration hapticAction;
     public static Vector3 tempPos = new Vector3(0, 0, 0);
+    public TextHandler.TextUtil texts = new TextHandler.TextUtil();
 
     public enum JobsToBeDone
     {
@@ -41,7 +42,7 @@ public class PCInteraction : MonoBehaviour
         pcOpened.SetActive(true);
         pcClosed.SetActive(true);
         insertedSSD.SetActive(false);
-
+        texts = new TextHandler.TextUtil();
     }
 
     // Update is called once per frame

@@ -164,15 +164,26 @@ public class TextHandler : MonoBehaviour
         {
             this.AtStart.Add(new SingleParagraph(text, time, preserve));
         }
+        public void addAtStart(float time)
+        {
+            this.AtStart.Add(new SingleParagraph("", time, false));
+        }
         public void addDialogue(string text, float time, string talker, bool preserve) {
             Dialogue.Add(new SingleParagraph(text, time, talker, preserve)); 
+        }
+        public void addDialogue(float time)
+        {
+            this.Dialogue.Add(new SingleParagraph("", time, false));
         }
         public void addInstructions(string text, float time, bool preserve)
         {
             Dialogue.Add(new SingleParagraph(text, time, preserve));
         }
-        public void playStart()
+        public void playStart(bool force)
         {
+            if (force) {
+                Clear();
+            }
             for (int i = 0; i < AtStart.Count; i++)
             {
                 addActionText(AtStart[i].Text,
@@ -181,6 +192,42 @@ public class TextHandler : MonoBehaviour
                 AtStart[i].Func?.Invoke();
             }
         }
-
+        public void playDialogue(bool force)
+        {
+            if(force)
+            {
+                Clear();
+            }
+            for (int i = 0; i < Dialogue.Count; i++)
+            {
+                addActionText(Dialogue[i].Text,
+                              Dialogue[i].ValidTime,
+                              Dialogue[i].Preserve);
+                Dialogue[i].Func?.Invoke();
+            }
+        }
+        public void playInstruction(int index, bool force)
+        {
+            if(force)
+            {
+                Clear();
+            }
+            addActionText(Instructions[index].Text,
+                Instructions[index].ValidTime,
+                Instructions[index].Preserve);
+            Instructions[index].Func?.Invoke();
+            
+        }
+        public void Clear()
+        {
+            Queue.Clear();
+            LastTime = Time;
+            Helper = HelperOnInv = "";
+            Showing = false;
+        }
+        public bool available()
+        {
+            return Queue.Count == 0;
+        }
     }
 }
