@@ -16,6 +16,6 @@ public class InvHelper : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        text.text = TextHandler.helperOnInv;
+        text.text = TextHandler.HelperOnInv;
     }
 }

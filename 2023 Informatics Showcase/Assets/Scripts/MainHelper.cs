@@ -16,6 +16,6 @@ public class MainHelper : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        text.text = TextHandler.helper;
+        text.text = TextHandler.Helper;
     }
 }

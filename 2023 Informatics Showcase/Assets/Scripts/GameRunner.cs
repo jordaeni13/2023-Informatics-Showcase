@@ -65,7 +65,7 @@ public class GameRunner : MonoBehaviour
         }
         if(status == 1)
         {
-            if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand) && TextHandler.queue.Count == 0)
+            if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand) && TextHandler.Queue.Count == 0)
                 {
                     TextHandler.addActionTexts(Help.started, Help.startedTime);
                     status = 999;
@@ -83,7 +83,7 @@ public class GameRunner : MonoBehaviour
         }
         if(status == 1)
         {
-            if(TextHandler.queue.Count == 0) status = 999;
+            if(TextHandler.Queue.Count == 0) status = 999;
         }
     }
     void InteractWithTeacher()
@@ -96,7 +96,7 @@ public class GameRunner : MonoBehaviour
         if(status == 1)
         {
             getReHelp();
-            if (TextHandler.queue.Count == 0) status = 999; // 디버깅용
+            if (TextHandler.Queue.Count == 0) status = 999; // 디버깅용
         }
     }
     void FindParts()
@@ -150,7 +150,7 @@ public class GameRunner : MonoBehaviour
 
     void getReHelp()
     {
-        if (SteamVR_Actions.htc_viu.viu_press_02.GetStateDown(SteamVR_Input_Sources.LeftHand) && TextHandler.queue.Count == 0) status = 0;
+        if (SteamVR_Actions.htc_viu.viu_press_02.GetStateDown(SteamVR_Input_Sources.LeftHand) && TextHandler.Queue.Count == 0) status = 0;
     }
 }
 
@@ -164,11 +164,15 @@ namespace Texts
         public static float[] startedTime = { 3, 1, 3 };
         public static string interactTeacher = "1층 교무실 앞에 김민철 선생님을 찾아 대화하세요";
         public static float interactTeacherTime = 5;
-        public static string[] findParts = { "이제 부품을 찾아보세요" , "", "SSD를 찾아봅시다" };
+        public static string[] findParts = { "이제 부품을 찾아보세요" , "", "SSD와 USB를 찾아봅시다" };
         public static float[] findPartsTime = { 3, 0.5f, 2 };
-        public static string[] assemble = { "컴퓨터를 열고 부품을 조립하세요" , "", "인벤토리에서 SSD를 꺼내 슬롯에 갖다대면\n 자동으로 장착됩니다."};
-        public static float[] assembleTime = { 3, 0.5f, 2 };
-        public static string[] install = { "여러분을 위해 친절하게 선생님께서\n미리 복구 USB를 꽂아두셨네요!", "", "OS가 설치되기를 기다립시다."};
-        public static float[] installTime = { 3, 1, 4 };
+        public static string[] assemble = { "컴퓨터를 열고 부품을 조립하세요" , "", "인벤토리에서 SSD를 꺼내 슬롯에 갖다대봅시다."};
+        public static float[] assembleTime = { 3, 1, 2 };
+        public static string[] install = { "USB를 전면 패널의 슬롯에 꽂아볼까요?", "", "인벤토리에서 USB를 꺼낸 뒤 슬롯에 갖다대봅시다."};
+        public static float[] installTime = { 3, 1, 2 };
+    }
+    public class Dialogue
+    {
+
     }
 }

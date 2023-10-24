@@ -17,12 +17,12 @@ public class PCInteraction : MonoBehaviour
     public bool isSSD = false;
     public bool isMessageDone = false;
     public SteamVR_Action_Vibration hapticAction;
+    public static Vector3 tempPos = new Vector3(0, 0, 0);
 
     public enum JobsToBeDone
     {
         openPC = 1,
         insertSSD = 2,
-        insertUSB = 4
     }
     // Start is called before the first frame update
     void Start()
@@ -51,7 +51,7 @@ public class PCInteraction : MonoBehaviour
         {
             if (GrabObj.objectInHand == pcClosed && doneJobs == 0)
             {
-                ReleaseObjectWithDisable();
+                tempPos = ReleaseObjectWithDisable();
                 pcClosed.SetActive(false);
                 setJobDone(JobsToBeDone.openPC);
             }
@@ -71,11 +71,10 @@ public class PCInteraction : MonoBehaviour
                         {
                             setJobDone(JobsToBeDone.insertSSD);
                             Debug.Log("SSD Inserted");
-                            TextHandler.addActionText("Àå", 0.5f);
-                            TextHandler.addActionText("ÀåÂø", 0.5f);
-                            TextHandler.addActionText("ÀåÂø¿Ï", 0.5f);
-                            TextHandler.addActionText("ÀåÂø¿Ï·á", 5f);
+                            //Sound : ÀåÂø
+                            TextHandler.addActionText("SSD ÀåÂø¿Ï·á", 5f);
                             ReleaseObjectWithDisable();
+                            pcClosed.GetComponent<Transform>().position = tempPos;
                         }
                         else
                         {
@@ -172,16 +171,20 @@ public class PCInteraction : MonoBehaviour
         doneJobs |= (int)job;
         Debug.Log("DoneJobs : " + doneJobs);
     }
-    private void ReleaseObjectWithDisable()
+    private Vector3 ReleaseObjectWithDisable()
     {
+        Vector3 res = new Vector3();
         if (GetComponent<FixedJoint>())
         {
             GrabObj.objectInHand.GetComponent<Collider>().isTrigger = false;
             GetComponent<FixedJoint>().connectedBody = null;
             Destroy(GetComponent<FixedJoint>());
             GrabObj.objectInHand.SetActive(false);
+            res = GrabObj.objectInHand.transform.position;
             GrabObj.objectInHand.GetComponent<Transform>().position = new Vector3(1000, 1000, 1000);
             GrabObj.objectInHand = null;
         }
+        return res;
     }
+    
 }
