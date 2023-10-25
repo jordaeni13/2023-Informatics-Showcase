@@ -12,6 +12,7 @@ public class TextHandler : MonoBehaviour
     private static float showTime = 0;
     private static string helperOnInv = "";
     private static string helper = "";
+    private static Action func;
     private static List<SingleParagraph> queue = new List<SingleParagraph>(); //Actual Time
 
     public static float Time { get => time; set => time = value; }
@@ -40,26 +41,26 @@ public class TextHandler : MonoBehaviour
     {
         //Debug.Log(queue.Count);
         Time += UnityEngine.Time.deltaTime;
-        updateText();
-        timeCounter();
+        UpdateText();
+        TimeCounter();
     }
-    public static void addActionText(string txt, float show_time, bool preserve)
+    public static void AddActionText(string txt, float show_time, bool preserve, Action func)
     {
         //Debug.Log("Msg :" + txt);
         if (LastTime < Time) LastTime = Time;
-        SingleParagraph temp = new SingleParagraph(txt, LastTime + show_time, preserve);
+        SingleParagraph temp = new SingleParagraph(txt, LastTime + show_time, preserve, func);
         LastTime = LastTime + show_time;
         Queue.Add(temp);
     }
 
-    public static void addActionTexts(string[] txts, float[] show_times)
+    public static void AddActionTexts(string[] txts, float[] show_times)
     {
         for (int i = 0; i < txts.Length; i++)
         {
-            addActionText(txts[i], i < show_times.Length ? show_times[i] : 3, true);
+            AddActionText(txts[i], i < show_times.Length ? show_times[i] : 3, true, null);
         }
     }
-    public static void updateText()
+    public static void UpdateText()
     {
         if (Showing)
         {
@@ -83,12 +84,13 @@ public class TextHandler : MonoBehaviour
                     Helper = Queue[0].Text;
                 }
                 ShowTime = Queue[0].ValidTime;
+                func?.Invoke();
                 Debug.Log("Showing " + Helper + " for " + (ShowTime - Time) + " secs");
                 Queue.RemoveAt(0);
             }
         }
     }
-    public static void timeCounter()
+    public static void TimeCounter()
     {
         if (Time >= Count)
         {
@@ -145,78 +147,73 @@ public class TextHandler : MonoBehaviour
     {
         public TextUtil()
         {
-            this.AtStart = new List<SingleParagraph>();
-            this.AtStart.Clear();
-            this.Dialogue = new List<SingleParagraph>();
-            this.Dialogue.Clear();
-            this.Instructions = new List<SingleParagraph>();
-            this.Instructions.Clear();
+            Paragraphs = new List<List<SingleParagraph>>();
+            Paragraphs.Clear();
+            for(int i = 0; i < 3; i++)
+            {
+                Paragraphs.Add(new List<SingleParagraph>());
+                Paragraphs[i].Clear();
+            }
         }
-        private List<SingleParagraph> atStart;//Relative Time
-        private List<SingleParagraph> dialogue;
-        private List<SingleParagraph> instructions;
+        public enum ParaType
+        {
+            atStart,
+            Dialogue,
+            Instruction,
+        }
+        public List<List<SingleParagraph>> Paragraphs;//Relative Time
 
-        public List<SingleParagraph> AtStart { get => atStart; set => atStart = value; }
-        public List<SingleParagraph> Dialogue { get => dialogue; set => dialogue = value; }
-        public List<SingleParagraph> Instructions { get => instructions; set => instructions = value; }
-
-        public void addAtStart(string text, float time, bool preserve)
+        public void AddParagraph(ParaType para, string text, float time, string talker, bool preserve)
         {
-            this.AtStart.Add(new SingleParagraph(text, time, preserve));
+            Paragraphs[(int)para].Add(new SingleParagraph(text, time, talker, preserve));
         }
-        public void addAtStart(float time)
+        public void AddParagraph(ParaType para, string text, float time, string talker, bool preserve, Action action)
         {
-            this.AtStart.Add(new SingleParagraph("", time, false));
+            Paragraphs[(int)para].Add(new SingleParagraph(text, time, talker, preserve,action));
         }
-        public void addDialogue(string text, float time, string talker, bool preserve) {
-            Dialogue.Add(new SingleParagraph(text, time, talker, preserve)); 
-        }
-        public void addDialogue(float time)
+        public void AddDelay(ParaType para, float time, string talker)
         {
-            this.Dialogue.Add(new SingleParagraph("", time, false));
+            Paragraphs[(int)para].Add(new SingleParagraph("", time, talker, false));
         }
-        public void addInstructions(string text, float time, bool preserve)
+        public void Assign(ParaType para, int index, string text, float time, string talker, bool preserve)
         {
-            Dialogue.Add(new SingleParagraph(text, time, preserve));
+            while(index >= Paragraphs[(int)para].Count)
+            {
+                Paragraphs[(int)para].Add(null);
+            }
+            Paragraphs[(int)para][index] = new SingleParagraph(text, time, talker, preserve);
         }
-        public void playStart(bool force)
+        public void Assign(ParaType para, int index, string text, float time, string talker, bool preserve, Action action)
+        {
+            while (index >= Paragraphs[(int)para].Count)
+            {
+                Paragraphs[(int)para].Add(null);
+            }
+            Paragraphs[(int)para][index] = new SingleParagraph(text, time, talker, preserve, action);
+        }
+        public void PlaySequence(ParaType paraType, bool force)
         {
             if (force) {
                 Clear();
             }
-            for (int i = 0; i < AtStart.Count; i++)
+            for (int i = 0; i < Paragraphs[(int)paraType].Count; i++)
             {
-                addActionText(AtStart[i].Text,
-                              AtStart[i].ValidTime,
-                              AtStart[i].Preserve);
-                AtStart[i].Func?.Invoke();
+                AddActionText(Paragraphs[(int)paraType][i].Text,
+                              Paragraphs[(int)paraType][i].ValidTime,
+                              Paragraphs[(int)paraType][i].Preserve,
+                              Paragraphs[(int)paraType][i].Func);
             }
         }
-        public void playDialogue(bool force)
+        public void PlaySingle(ParaType paraType, int index, bool force)
         {
             if(force)
             {
                 Clear();
             }
-            for (int i = 0; i < Dialogue.Count; i++)
-            {
-                addActionText(Dialogue[i].Text,
-                              Dialogue[i].ValidTime,
-                              Dialogue[i].Preserve);
-                Dialogue[i].Func?.Invoke();
-            }
-        }
-        public void playInstruction(int index, bool force)
-        {
-            if(force)
-            {
-                Clear();
-            }
-            addActionText(Instructions[index].Text,
-                Instructions[index].ValidTime,
-                Instructions[index].Preserve);
-            Instructions[index].Func?.Invoke();
-            
+            AddActionText(Paragraphs[(int)paraType][index].Text,
+                          Paragraphs[(int)paraType][index].ValidTime,
+                          Paragraphs[(int)paraType][index].Preserve,
+                          Paragraphs[(int)paraType][index].Func);
         }
         public void Clear()
         {
@@ -225,7 +222,7 @@ public class TextHandler : MonoBehaviour
             Helper = HelperOnInv = "";
             Showing = false;
         }
-        public bool available()
+        public bool Available()
         {
             return Queue.Count == 0;
         }

@@ -4,19 +4,21 @@ using TMPro;
 using UnityEngine;
 using Texts;
 using Valve.VR;
+using static TextHandler.TextUtil;
 
 public class GameRunner : MonoBehaviour
 {
     private float time;
     private int status = 0;
     private int seq = -1;
+    private TextHandler.TextUtil textUtil = new();
     void Start()
     {
         time = 0;
         status = 999;
         seq = -1;
         Debug.Log("Game Started");
-        TextHandler.addActionText("Game Started", 5.0f);
+        TextHandler.AddActionText("Game Started", 2.0f, false, null);
         
     }
 
@@ -60,14 +62,14 @@ public class GameRunner : MonoBehaviour
     {
         if(status == 0)
         {
-            TextHandler.addActionTexts(Help.starter, Help.starterTime);
+            TextHandler.AddActionTexts(Help.starter, Help.starterTime);
             status = 1;
         }
         if(status == 1)
         {
             if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand) && TextHandler.Queue.Count == 0)
                 {
-                    TextHandler.addActionTexts(Help.started, Help.startedTime);
+                    TextHandler.AddActionTexts(Help.started, Help.startedTime);
                     status = 999;
                 }
             getReHelp();
@@ -90,7 +92,7 @@ public class GameRunner : MonoBehaviour
     {
         if(status == 0)
         {
-            TextHandler.addActionText(Help.interactTeacher,Help.interactTeacherTime);
+            TextHandler.AddActionText(Help.interactTeacher,Help.interactTeacherTime, true, null);
             status = 1;
         }
         if(status == 1)
@@ -103,7 +105,7 @@ public class GameRunner : MonoBehaviour
     {
         if(status == 0)
         {
-            TextHandler.addActionTexts(Help.findParts, Help.findPartsTime);
+            TextHandler.AddActionTexts(Help.findParts, Help.findPartsTime);
             status = 1;
             FindObjects.enableFind = true;
         }
@@ -111,7 +113,7 @@ public class GameRunner : MonoBehaviour
         {
             if(FindObjects.successFind)
             {
-                TextHandler.addActionText("다 찾았네요!", 3);
+                TextHandler.AddActionText("다 찾았네요!", 3, false, null);
                 status = 999;
             }
             getReHelp();
@@ -121,7 +123,7 @@ public class GameRunner : MonoBehaviour
     {
         if(status == 0)
         {
-            TextHandler.addActionTexts(Help.assemble, Help.assembleTime);
+            PCInteraction.TextUtil.PlaySequence(ParaType.atStart, true);
             status = 1;
             PCInteraction.pcInteractionEnabled = true;
         }
@@ -135,7 +137,7 @@ public class GameRunner : MonoBehaviour
     {
         if (status == 0)
         {
-            TextHandler.addActionTexts(Help.install, Help.installTime);
+            TextHandler.AddActionTexts(Help.install, Help.installTime);
             status = 1;
         }
         if (status == 1)

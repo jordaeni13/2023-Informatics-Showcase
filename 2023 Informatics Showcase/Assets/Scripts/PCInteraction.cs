@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
+using static TextHandler.TextUtil;
 
 public class PCInteraction : MonoBehaviour
 {
@@ -18,12 +19,13 @@ public class PCInteraction : MonoBehaviour
     public bool isMessageDone = false;
     public SteamVR_Action_Vibration hapticAction;
     public static Vector3 tempPos = new Vector3(0, 0, 0);
-    public TextHandler.TextUtil texts = new TextHandler.TextUtil();
+    public static TextHandler.TextUtil TextUtil = new();
 
     public enum JobsToBeDone
     {
-        openPC = 1,
-        insertSSD = 2,
+        goToMulmi = 1,
+        openPC = 2,
+        insertSSD = 4,
     }
     // Start is called before the first frame update
     void Start()
@@ -42,7 +44,8 @@ public class PCInteraction : MonoBehaviour
         pcOpened.SetActive(true);
         pcClosed.SetActive(true);
         insertedSSD.SetActive(false);
-        texts = new TextHandler.TextUtil();
+        TextUtil = new TextHandler.TextUtil();
+        initTexts();
     }
 
     // Update is called once per frame
@@ -73,7 +76,11 @@ public class PCInteraction : MonoBehaviour
                             setJobDone(JobsToBeDone.insertSSD);
                             Debug.Log("SSD Inserted");
                             //Sound : 장착
-                            TextHandler.addActionText("SSD 장착완료", 5f);
+                            TextUtil.PlaySingle(
+                                TextHandler.TextUtil.ParaType.Instruction,
+                                (int)Instruction.doneSSD,
+                                true
+                                );
                             ReleaseObjectWithDisable();
                             pcClosed.GetComponent<Transform>().position = tempPos;
                         }
@@ -81,7 +88,11 @@ public class PCInteraction : MonoBehaviour
                         {
                             if (!isMessageDone)
                             {
-                                TextHandler.addActionText("이제 우측 트리거를 누르세요!", 3);
+                                TextUtil.PlaySingle(
+                                    TextHandler.TextUtil.ParaType.Instruction,
+                                    (int)Instruction.triggerSSD,
+                                    false
+                                    );
                                 isMessageDone = true;
                             }
                         }
@@ -102,30 +113,6 @@ public class PCInteraction : MonoBehaviour
         pcOpened.SetActive(state);
         pcClosed.SetActive(!state);
     }
-
-    /*
-    void OnCollisionEnter(Collision collision)
-    {
-        Debug.Log(collision.collider.gameObject.name);
-        if (!collision.collider.GetComponent<Rigidbody>() || collision.collider.gameObject.CompareTag("Grabbable"))
-        {
-            return;
-        }
-        addCollision(collision.collider);
-    }
-    void OnCollisionStay(Collision collision)
-    {
-
-    }
-    void OnCollisionExit(Collision collision)
-    {
-        if(!collision.collider.GetComponent<Rigidbody>() || collision.gameObject.CompareTag("Grabbable"))
-        {
-            return;
-        }
-        deleteCollsion(collision.collider);
-    }
-    */
 
     private void OnTriggerEnter(Collider other)
     {
@@ -187,5 +174,75 @@ public class PCInteraction : MonoBehaviour
         }
         return res;
     }
-    
+    enum Instruction
+    {
+        goToPC,
+        assembleParts,
+        openPC,
+        touchSSD,
+        triggerSSD,
+        doneSSD,
+    }
+    void initTexts()
+    {
+        //atStart
+        TextUtil.AddParagraph(
+            ParaType.atStart,
+            "정보실로 이동해봅시다",
+            3.0f,
+            "Helper",
+            true
+            );
+        TextUtil.AddDelay(ParaType.atStart, 1.0f, "Helper");
+        TextUtil.AddParagraph(
+            ParaType.atStart,
+            "정보실은 1층 교실 반대쪽 끝에 있습니다.",
+            3.0f,
+            "Helper",
+            true
+            );
+        //Instruction
+        TextUtil.Assign(ParaType.Instruction,
+            (int)Instruction.goToPC,
+            "이제 컴퓨터로 접근하세요",
+            1.0f,
+            "Helper",
+            true
+            );
+        TextUtil.Assign(ParaType.Instruction,
+            (int)Instruction.assembleParts,
+            "컴퓨터를 열고 부품을 조립하세요",
+            3.0f,
+            "Helper",
+            true
+            );
+        TextUtil.Assign(ParaType.Instruction,
+            (int)Instruction.openPC,
+            "닫혀있는 컴퓨터를 잡으면 자동으로 열립니다",
+            1.0f,
+            "Helper",
+            false
+            );
+        TextUtil.Assign(ParaType.Instruction,
+            (int)Instruction.touchSSD,
+            "인벤토리에서 SSD를 꺼내 슬롯에 갖다대보세요",
+            3.0f,
+            "Helper",
+            true
+            );
+        TextUtil.Assign(ParaType.Instruction,
+            (int)Instruction.triggerSSD,
+            "이제 우측 트리거를 잡아 창착하세요!",
+            1.0f,
+            "Helper",
+            false
+            );
+        TextUtil.Assign(ParaType.Instruction,
+            (int)Instruction.doneSSD,
+            "SSD가 장착되었습니다",
+            1.0f,
+            "Helper",
+            false
+            );
+    }
 }

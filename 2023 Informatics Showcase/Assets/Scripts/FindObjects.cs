@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static TextHandler.TextUtil;
 public class FindObjects : MonoBehaviour
 {
     public static bool enableFind = false;
