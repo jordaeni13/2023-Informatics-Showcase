@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,10 +8,10 @@ public class GrabObj : MonoBehaviour
 {
     private GameObject collidingObject;  //null
     public static GameObject objectInHand; //null
-
+    private readonly string[] grabs = { "Grabbable", "trash", "notInv" };
     private void SetCollidingObject(Collider col)
     {
-        if (collidingObject || !col.GetComponent<Rigidbody>() || !(col.gameObject.CompareTag("Grabbable") || col.gameObject.CompareTag("trash")))
+        if (collidingObject || !col.GetComponent<Rigidbody>() || !isGrabbable(col, grabs))
         {
             return;
         }
@@ -79,6 +80,17 @@ public class GrabObj : MonoBehaviour
         fx.breakForce = 20000;
         fx.breakTorque = 20000;
         return fx;
+    }
+
+    private bool isGrabbable(Collider col, string[] vs)
+    {
+        foreach( string val in vs ) {
+            if(col.gameObject.tag == val)
+            {
+                return true;
+            }
+        }
+        return false;
     }
     void Update()
     {

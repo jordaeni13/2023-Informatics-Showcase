@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,7 +20,9 @@ public class PCInteraction : MonoBehaviour
     public bool isSSD = false;
     public bool isMessageDone = false;
     public SteamVR_Action_Vibration hapticAction;
-    public static Vector3 tempPos = new Vector3(0, 0, 0);
+    public static readonly Vector3 init = new Vector3(0, 0, 0);
+    public static readonly Quaternion initq = new Quaternion(0, 0, 0, 0);
+    public static object[] tempPos = { init, initq };
     public static TextHandler.TextUtil TextUtil = new();
 
     public enum JobsToBeDone
@@ -29,9 +32,11 @@ public class PCInteraction : MonoBehaviour
         openPC = 4,
         collideSSD = 8,
         insertSSD = 16,
-        collideUSB = 32,
-        insertUSB = 64,
-        allDone = 128,
+        turnOnPcPostSSD = 32,
+        afterNoBoot = 64,
+        collideUSB = 128,
+        insertUSB = 256,
+        allDone = 512,
     }
     // Start is called before the first frame update
     void Start()
@@ -111,10 +116,40 @@ public class PCInteraction : MonoBehaviour
                             );
                         insertedSSD.SetActive(true);
                         ReleaseObjectWithDisable();
-                        pcClosed.GetComponent<Transform>().position = tempPos;
+                        pcClosed.GetComponent<Transform>().position = (Vector3)tempPos[0];
+                        pcClosed.GetComponent<Transform>().rotation = (Quaternion)tempPos[1];
+                        pcClosed.GetComponent<Rigidbody>().isKinematic = true;
+                        pcClosed.SetActive(true);
                     }
             }
-            if(jobDoneBefore(JobsToBeDone.collideUSB))
+            if(jobDoneBefore(JobsToBeDone.turnOnPcPostSSD))
+            {
+                if (hasTag("Power") && SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
+                {
+                    setJobDone(JobsToBeDone.turnOnPcPostSSD);
+                    Debug.Log("Power Button Clicked");
+
+                }
+                if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
+                {
+                    if (TextUtil.Available())
+                    {
+                        TextUtil.PlaySingle(
+                            ParaType.Instruction,
+                            (int)Instruction.touchButton,
+                            true
+                            );
+                    }
+                }
+            }
+            if (jobDoneBefore(JobsToBeDone.afterNoBoot))
+            {
+                if (true)
+                {
+                    setJobDone(JobsToBeDone.afterNoBoot);
+                }
+            }
+            if (jobDoneBefore(JobsToBeDone.collideUSB))
             {
                 if (hasName("USB_Slot_Collider") && GrabObj.objectInHand != null) 
                     if(GrabObj.objectInHand.name == "memory")
@@ -213,9 +248,10 @@ public class PCInteraction : MonoBehaviour
         doneJobs |= (int)job;
         Debug.Log("DoneJobs : " + doneJobs);
     }
-    private Vector3 ReleaseObjectWithDisable()
+    private object[] ReleaseObjectWithDisable()
     {
         Vector3 res = new Vector3();
+        Quaternion res2 = new Quaternion();
         if (GetComponent<FixedJoint>())
         {
             GrabObj.objectInHand.GetComponent<Collider>().isTrigger = false;
@@ -223,10 +259,12 @@ public class PCInteraction : MonoBehaviour
             Destroy(GetComponent<FixedJoint>());
             GrabObj.objectInHand.SetActive(false);
             res = GrabObj.objectInHand.transform.position;
+            res2 = GrabObj.objectInHand.transform.rotation;
             GrabObj.objectInHand.GetComponent<Transform>().position = new Vector3(1000, 1000, 1000);
             GrabObj.objectInHand = null;
         }
-        return res;
+        object[] returner = { res, res2 };
+        return returner;
     }
     enum Instruction
     {
@@ -238,7 +276,8 @@ public class PCInteraction : MonoBehaviour
         doneSSD,
         touchUSB,
         triggerUSB,
-        doneUSB
+        doneUSB,
+        touchButton
     }
     void initTexts()
     {
@@ -319,6 +358,13 @@ public class PCInteraction : MonoBehaviour
             (int)Instruction.doneUSB,
             "USB가 장착되었습니다",
             1.0f,
+            "Helper",
+            false
+            );
+        TextUtil.Assign(ParaType.Instruction,
+            (int)Instruction.touchButton,
+            "전원버튼을 눌러 켜봅시다!",
+            0.1f,
             "Helper",
             false
             );

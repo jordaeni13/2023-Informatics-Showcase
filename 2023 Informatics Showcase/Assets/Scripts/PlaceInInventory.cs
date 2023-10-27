@@ -9,7 +9,7 @@ public class PlaceInInventory : MonoBehaviour
         if (other.gameObject.CompareTag("InventorySlot") && GrabObj.objectInHand)
         {
             //Check if the inventory slot already has a child
-            if (other.transform.childCount > 1) {
+            if (GrabObj.objectInHand.CompareTag("notInv") ||other.transform.childCount > 1) {
                 //If it does, don't place the item
 
                 return;
