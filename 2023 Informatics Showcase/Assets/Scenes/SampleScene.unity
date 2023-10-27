@@ -1751,6 +1751,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Set_2
       objectReference: {fileID: 0}
+    - target: {fileID: 8493015188241380710, guid: 388b258f17ef6a843a9790ac120793a1,
+        type: 3}
+      propertyPath: m_TagString
+      value: notInv
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 388b258f17ef6a843a9790ac120793a1, type: 3}
 --- !u!4 &225035499 stripped
@@ -2303,6 +2308,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Set_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8493015188241380710, guid: 388b258f17ef6a843a9790ac120793a1,
+        type: 3}
+      propertyPath: m_TagString
+      value: notInv
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 388b258f17ef6a843a9790ac120793a1, type: 3}
