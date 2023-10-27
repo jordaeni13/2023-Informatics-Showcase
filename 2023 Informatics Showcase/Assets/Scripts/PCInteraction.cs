@@ -51,6 +51,7 @@ public class PCInteraction : MonoBehaviour
         pcOpened.SetActive(true);
         pcClosed.SetActive(true);
         insertedSSD.SetActive(false);
+        insertedUSB.SetActive(false);
         TextUtil = new TextHandler.TextUtil();
         initTexts();
     }
@@ -82,78 +83,69 @@ public class PCInteraction : MonoBehaviour
 
             if(jobDoneBefore(JobsToBeDone.collideSSD))
             {
-                if (hasTag("SSD"))
-                {
-                    if (!isSSD)
-                    {
-                        Debug.Log("SSD collided!");
-                    }
-                    isSSD = true;
-
+                if(hasTag("SSD") && GrabObj.objectInHand != null)
+                    
                     if(GrabObj.objectInHand.name == "980Pro")
-                    {
-                        if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
                         {
-                            setJobDone(JobsToBeDone.insertSSD);
-                            isMessageDone = false;
-                            Debug.Log("SSD Inserted");
-                            //Sound : ÀåÂø
                             TextUtil.PlaySingle(
-                                TextHandler.TextUtil.ParaType.Instruction,
-                                (int)Instruction.doneSSD,
-                                true
-                                );
-                            insertedSSD.SetActive(true);
-                            ReleaseObjectWithDisable();
-                            pcClosed.GetComponent<Transform>().position = tempPos;
-                        }
-                        else
-                        {
-                            if (!isMessageDone)
-                            {
-                                TextUtil.PlaySingle(
                                     TextHandler.TextUtil.ParaType.Instruction,
                                     (int)Instruction.triggerSSD,
-                                    false
+                                    true
                                     );
-                                setJobDone(JobsToBeDone.collidePC);
-                                isMessageDone = true;
-                            }
+                            setJobDone(JobsToBeDone.collideSSD);
                         }
-                    }
-                }
             }
-            if(jobDoneBefore(JobsToBeDone.collideUSB))
+
+            if(jobDoneBefore(JobsToBeDone.insertSSD))
             {
-                if(hasName("USB_Slot_Collider") && GrabObj.objectInHand.name == "memory")
-                {
-                    if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
+                if (hasTag("SSD") && GrabObj.objectInHand != null)
+                    if (GrabObj.objectInHand.name == "980Pro" && SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
                     {
-                        setJobDone(JobsToBeDone.insertUSB);
-                        Debug.Log("USB Inserted");
+                        setJobDone(JobsToBeDone.insertSSD);
+                        Debug.Log("SSD Inserted");
                         //Sound : ÀåÂø
                         TextUtil.PlaySingle(
                             TextHandler.TextUtil.ParaType.Instruction,
-                            (int)Instruction.doneUSB,
+                            (int)Instruction.doneSSD,
                             true
                             );
-                        insertedUSB.SetActive(true);
+                        insertedSSD.SetActive(true);
                         ReleaseObjectWithDisable();
+                        pcClosed.GetComponent<Transform>().position = tempPos;
                     }
-                    else
-                    {
-                        if (!isMessageDone)
+            }
+            if(jobDoneBefore(JobsToBeDone.collideUSB))
+            {
+                if (hasName("USB_Slot_Collider") && GrabObj.objectInHand != null) 
+                    if(GrabObj.objectInHand.name == "memory")
                         {
                             TextUtil.PlaySingle(
                                 TextHandler.TextUtil.ParaType.Instruction,
                                 (int)Instruction.triggerUSB,
-                                false
+                                true
                                 );
                             setJobDone(JobsToBeDone.collideUSB);
-                            isMessageDone = true;
                         }
-                    }
-                }
+            }
+            if(jobDoneBefore(JobsToBeDone.insertUSB))
+            {
+                if(hasName("USB_Slot_Collider") && GrabObj.objectInHand != null)
+                    if(GrabObj.objectInHand.name == "memory")
+                        {
+                            if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
+                            {
+                                setJobDone(JobsToBeDone.insertUSB);
+                                Debug.Log("USB Inserted");
+                                //Sound : ÀåÂø
+                                TextUtil.PlaySingle(
+                                    TextHandler.TextUtil.ParaType.Instruction,
+                                    (int)Instruction.doneUSB,
+                                    true
+                                    );
+                                insertedUSB.SetActive(true);
+                                ReleaseObjectWithDisable();
+                            }
+                        }
             }
             if(jobDoneBefore(JobsToBeDone.allDone))
             {
@@ -176,7 +168,6 @@ public class PCInteraction : MonoBehaviour
     }
     void addCollision(Collider collision)
     {
-        Debug.Log(collision.gameObject.name);
         collidings.Add(collision.gameObject);
         //hapticAction.Execute(0, 150, 75, 0.1f, SteamVR_Input_Sources.RightHand);
     }

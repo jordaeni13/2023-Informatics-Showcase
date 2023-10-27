@@ -81,8 +81,9 @@ public class TextHandler : MonoBehaviour
                 HelperOnInv = "";
                 if (Queue[0].Preserve == true)
                 {
-                    Helper = Queue[0].Text;
+                    HelperOnInv = Queue[0].Text;
                 }
+                Helper = Queue[0].Text;
                 ShowTime = Queue[0].ValidTime;
                 func?.Invoke();
                 Debug.Log("Showing " + Helper + " for " + (ShowTime - Time) + " secs");

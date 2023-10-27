@@ -129,6 +129,10 @@ public class GameRunner : MonoBehaviour
         }
         if (status == 1)
         {
+            if(PCInteraction.pcInteratcionSuccess)
+            {
+                TextHandler.AddActionText("¿ﬂ ¿Â¬¯«œºÃΩ¿¥œ¥Ÿ.", 3, true, null);
+            }
             getReHelp();
         }
     }
