@@ -12,6 +12,8 @@ public class TextHandler : MonoBehaviour
     private static float showTime = 0;
     private static string helperOnInv = "";
     private static string helper = "";
+    private static string dialogue = "";
+    private static string sender = "";
     private static Action func;
     private static List<SingleParagraph> queue = new List<SingleParagraph>(); //Actual Time
 
@@ -22,6 +24,8 @@ public class TextHandler : MonoBehaviour
     public static float ShowTime { get => showTime; set => showTime = value; }
     public static string HelperOnInv { get => helperOnInv; set => helperOnInv = value; }
     public static string Helper { get => helper; set => helper = value; }
+    public static string Dialogue { get => dialogue; set => dialogue = value; }
+    public static string Sender { get => sender; set => sender = value; }
     public static List<SingleParagraph> Queue { get => queue; set => queue = value; }
 
     void Start()
@@ -30,6 +34,8 @@ public class TextHandler : MonoBehaviour
         ShowTime = 0;
         HelperOnInv = "";
         Helper = "";
+        Dialogue = "";
+        Sender = "";
         LastTime = 0;
         Time = 0;
         Count = 0;
@@ -67,7 +73,8 @@ public class TextHandler : MonoBehaviour
             //Debug.Log("showing");
             if (Time >= ShowTime)
             {
-                HelperOnInv = Helper;
+                Dialogue = "";
+                Sender = "";
                 Helper = "";
                 Showing = false;
             }
@@ -78,16 +85,26 @@ public class TextHandler : MonoBehaviour
             if (Queue.Count != 0)
             {
                 Showing = true;
-                HelperOnInv = "";
-                if (Queue[0].Preserve == true)
-                {
-                    HelperOnInv = Queue[0].Text;
+                if(!Queue[0].talker.Contains("Dialogue")) {
+                    HelperOnInv = "";
+                    if (Queue[0].Preserve == true)
+                    {
+                        HelperOnInv = Queue[0].Text;
+                    }
+                    Helper = Queue[0].Text;
+                    ShowTime = Queue[0].ValidTime;
+                    func?.Invoke();
+                    Debug.Log("Showing " + Helper + " for " + (ShowTime - Time) + " secs");
+                    Queue.RemoveAt(0);
                 }
-                Helper = Queue[0].Text;
-                ShowTime = Queue[0].ValidTime;
-                func?.Invoke();
-                Debug.Log("Showing " + Helper + " for " + (ShowTime - Time) + " secs");
-                Queue.RemoveAt(0);
+                else {
+                    Sender = Queue[0].talker.replace("Dialogue:","");
+                    Dialogue = Queue[0].Text;
+                    ShowTime = Queue[0].ValidTime;
+                    func?.Invoke();
+                    Debug.Log("Showing " + Sender + "'s Message" + Dialogue + " for " + (ShowTime - Time) + " secs");
+                    Queue.RemoveAt(0);
+                }
             }
         }
     }
