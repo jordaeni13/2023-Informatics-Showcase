@@ -176,21 +176,21 @@ public class TextHandler : MonoBehaviour
         {
             Paragraphs[(int)para].Add(new SingleParagraph("", time, talker, false));
         }
-        public void Assign(ParaType para, int index, string text, float time, string talker, bool preserve)
+        public void Assign(ParaType para, object index, string text, float time, string talker, bool preserve)
         {
-            while(index >= Paragraphs[(int)para].Count)
+            while((int)index >= Paragraphs[(int)para].Count)
             {
                 Paragraphs[(int)para].Add(null);
             }
-            Paragraphs[(int)para][index] = new SingleParagraph(text, time, talker, preserve);
+            Paragraphs[(int)para][(int)index] = new SingleParagraph(text, time, talker, preserve);
         }
-        public void Assign(ParaType para, int index, string text, float time, string talker, bool preserve, Action action)
+        public void Assign(ParaType para, object index, string text, float time, string talker, bool preserve, Action action)
         {
-            while (index >= Paragraphs[(int)para].Count)
+            while ((int)index >= Paragraphs[(int)para].Count)
             {
                 Paragraphs[(int)para].Add(null);
             }
-            Paragraphs[(int)para][index] = new SingleParagraph(text, time, talker, preserve, action);
+            Paragraphs[(int)para][(int)index] = new SingleParagraph(text, time, talker, preserve, action);
         }
         public void PlaySequence(ParaType paraType, bool force)
         {

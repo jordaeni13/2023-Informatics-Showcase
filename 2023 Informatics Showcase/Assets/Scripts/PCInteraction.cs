@@ -7,48 +7,44 @@ using static TextHandler.TextUtil;
 
 public class PCInteraction : MonoBehaviour
 {
-    public static bool pcInteractionEnabled = false;
-    public static bool pcInteratcionSuccess = false;
-    public bool isOpened = false;
+    public enum JobsToBeDone
+    {
+        goToMulmi,
+        collidePC,
+        openPC,
+        collideSSD,
+        insertSSD,
+        turnOnPcPostSSD,
+        afterNoBoot,
+        collideUSB,
+        insertUSB
+    }
+
+    public static bool Enabled = false;
+    public static bool Success = false;
     public static bool isColliding = false;
     public static List<GameObject> collidings = new List<GameObject>();
     public static GameObject pcOpened;
     public static GameObject pcClosed;
     public static GameObject insertedSSD;
     public static GameObject insertedUSB;
-    public static int doneJobs = 0;
-    public bool isSSD = false;
     public bool isMessageDone = false;
     public SteamVR_Action_Vibration hapticAction;
     public static readonly Vector3 init = new Vector3(0, 0, 0);
     public static readonly Quaternion initq = new Quaternion(0, 0, 0, 0);
     public static object[] tempPos = { init, initq };
     public static TextHandler.TextUtil TextUtil = new();
+    public static JobHandler JobUtil;
 
-    public enum JobsToBeDone
-    {
-        goToMulmi = 1,
-        collidePC = 2,
-        openPC = 4,
-        collideSSD = 8,
-        insertSSD = 16,
-        turnOnPcPostSSD = 32,
-        afterNoBoot = 64,
-        collideUSB = 128,
-        insertUSB = 256,
-        allDone = 512,
-    }
+
     // Start is called before the first frame update
     void Start()
     {
         collidings.Clear();
-        isSSD = false;
-        doneJobs = 0;
         Debug.Log("Hello PC");
-        isOpened = false;
-        pcInteractionEnabled = false;
+        Enabled = false;
         isMessageDone = false;
-        pcInteratcionSuccess = false;
+        Success = false;
         pcOpened = GameObject.Find("PC_Opened");
         pcClosed = GameObject.Find("PC_Closed");
         insertedSSD = GameObject.Find("980");
@@ -58,35 +54,36 @@ public class PCInteraction : MonoBehaviour
         insertedSSD.SetActive(false);
         insertedUSB.SetActive(false);
         TextUtil = new TextHandler.TextUtil();
+        JobUtil = new(System.Enum.GetValues(typeof(JobsToBeDone)).Length, "PCInteraction");
         initTexts();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (pcInteractionEnabled)
+        if (Enabled)
         {
-            if (hasName("멀미실") && jobDoneBefore(JobsToBeDone.goToMulmi))
+            if (hasName("멀미실") && JobUtil.isPost(JobsToBeDone.goToMulmi))
             {
                 TextUtil.PlaySingle(ParaType.Instruction, (int)Instruction.goToPC, true);
-                setJobDone(JobsToBeDone.goToMulmi);
+                JobUtil.setDone(JobsToBeDone.goToMulmi);
             }
 
-            if(hasName("PC_Opened") && jobDoneBefore(JobsToBeDone.collidePC)){
+            if(hasName("PC_Opened") && JobUtil.isPost(JobsToBeDone.collidePC)){
                 TextUtil.PlaySingle(ParaType.Instruction, (int)Instruction.assembleParts, true);
                 TextUtil.PlaySingle(ParaType.Instruction, (int)Instruction.openPC, false);
-                setJobDone(JobsToBeDone.collidePC);
+                JobUtil.setDone(JobsToBeDone.collidePC);
             }
 
-            if (GrabObj.objectInHand == pcClosed && jobDoneBefore(JobsToBeDone.openPC))
+            if (GrabObj.objectInHand == pcClosed && JobUtil.isDone(JobsToBeDone.openPC))
             {
                 TextUtil.PlaySingle(ParaType.Instruction, (int)Instruction.touchSSD, true);
-                tempPos = ReleaseObjectWithDisable();
+                tempPos = killGrab();
                 pcClosed.SetActive(false);
-                setJobDone(JobsToBeDone.openPC);
+                JobUtil.setDone(JobsToBeDone.openPC);
             }
 
-            if(jobDoneBefore(JobsToBeDone.collideSSD))
+            if(JobUtil.isPost(JobsToBeDone.collideSSD))
             {
                 if(hasTag("SSD") && GrabObj.objectInHand != null)
                     
@@ -97,16 +94,16 @@ public class PCInteraction : MonoBehaviour
                                     (int)Instruction.triggerSSD,
                                     true
                                     );
-                            setJobDone(JobsToBeDone.collideSSD);
+                            JobUtil.setDone(JobsToBeDone.collideSSD);
                         }
             }
 
-            if(jobDoneBefore(JobsToBeDone.insertSSD))
+            if(JobUtil.isPost(JobsToBeDone.insertSSD))
             {
                 if (hasTag("SSD") && GrabObj.objectInHand != null)
-                    if (GrabObj.objectInHand.name == "980Pro" && SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
+                    if (GrabObj.objectInHand.name == "980Pro" && Buttons.RTrigger())
                     {
-                        setJobDone(JobsToBeDone.insertSSD);
+                        JobUtil.setDone(JobsToBeDone.insertSSD);
                         Debug.Log("SSD Inserted");
                         //Sound : 장착
                         TextUtil.PlaySingle(
@@ -115,22 +112,19 @@ public class PCInteraction : MonoBehaviour
                             true
                             );
                         insertedSSD.SetActive(true);
-                        ReleaseObjectWithDisable();
-                        pcClosed.GetComponent<Transform>().position = (Vector3)tempPos[0];
-                        pcClosed.GetComponent<Transform>().rotation = (Quaternion)tempPos[1];
-                        pcClosed.GetComponent<Rigidbody>().isKinematic = true;
-                        pcClosed.SetActive(true);
+                        killGrab();
+                        fixObject(pcClosed,tempPos);
                     }
             }
-            if(jobDoneBefore(JobsToBeDone.turnOnPcPostSSD))
+            if(JobUtil.isPost(JobsToBeDone.turnOnPcPostSSD))
             {
-                if (hasTag("Power") && SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
+                if (hasTag("Power") && Buttons.RTrigger())
                 {
-                    setJobDone(JobsToBeDone.turnOnPcPostSSD);
+                    JobUtil.setDone(JobsToBeDone.turnOnPcPostSSD);
                     Debug.Log("Power Button Clicked");
 
                 }
-                if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
+                if (Buttons.RTrigger())
                 {
                     if (TextUtil.Available())
                     {
@@ -142,14 +136,14 @@ public class PCInteraction : MonoBehaviour
                     }
                 }
             }
-            if (jobDoneBefore(JobsToBeDone.afterNoBoot))
+            if (JobUtil.isPost(JobsToBeDone.afterNoBoot))
             {
                 if (true)
                 {
-                    setJobDone(JobsToBeDone.afterNoBoot);
+                    JobUtil.setDone(JobsToBeDone.afterNoBoot);
                 }
             }
-            if (jobDoneBefore(JobsToBeDone.collideUSB))
+            if (JobUtil.isPost(JobsToBeDone.collideUSB))
             {
                 if (hasName("USB_Slot_Collider") && GrabObj.objectInHand != null) 
                     if(GrabObj.objectInHand.name == "memory")
@@ -159,17 +153,17 @@ public class PCInteraction : MonoBehaviour
                                 (int)Instruction.triggerUSB,
                                 true
                                 );
-                            setJobDone(JobsToBeDone.collideUSB);
+                            JobUtil.setDone(JobsToBeDone.collideUSB);
                         }
             }
-            if(jobDoneBefore(JobsToBeDone.insertUSB))
+            if(JobUtil.isPost(JobsToBeDone.insertUSB))
             {
                 if(hasName("USB_Slot_Collider") && GrabObj.objectInHand != null)
                     if(GrabObj.objectInHand.name == "memory")
                         {
-                            if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand))
+                            if (Buttons.RTrigger())
                             {
-                                setJobDone(JobsToBeDone.insertUSB);
+                                JobUtil.setDone(JobsToBeDone.insertUSB);
                                 Debug.Log("USB Inserted");
                                 //Sound : 장착
                                 TextUtil.PlaySingle(
@@ -178,14 +172,14 @@ public class PCInteraction : MonoBehaviour
                                     true
                                     );
                                 insertedUSB.SetActive(true);
-                                ReleaseObjectWithDisable();
+                                killGrab();
                             }
                         }
             }
-            if(jobDoneBefore(JobsToBeDone.allDone))
+            if(JobUtil.allDone())
             {
-                pcInteratcionSuccess = true;
-                pcInteractionEnabled = false;
+                Success = true;
+                Enabled = false;
             }
 
         }
@@ -207,6 +201,13 @@ public class PCInteraction : MonoBehaviour
         //hapticAction.Execute(0, 150, 75, 0.1f, SteamVR_Input_Sources.RightHand);
     }
 
+    void fixObject(GameObject @object, object[] temppos)
+    {
+        @object.GetComponent<Transform>().position = (Vector3)temppos[0];
+        @object.GetComponent<Transform>().rotation = (Quaternion)temppos[1];
+        @object.GetComponent<Rigidbody>().isKinematic = true;
+        @object.SetActive(true);
+    }
     void deleteCollision(Collider collision)
     {
         collidings.Remove(collision.gameObject);
@@ -228,27 +229,7 @@ public class PCInteraction : MonoBehaviour
         }
         return false;
     }
-
-    bool jobCheck(JobsToBeDone job)
-    {
-        return (doneJobs & (int)job) == (int)job;
-    }
-
-    bool jobDoneBefore(JobsToBeDone job)
-    {
-        return ((int)job) - 1 == doneJobs;
-    }
-    bool jobCheck(JobsToBeDone job1, JobsToBeDone job2)
-    {
-        return ((doneJobs & (int)job1) == (int)job1) && ((doneJobs & (int)job2) == (int)job2);
-    }
-
-    void setJobDone(JobsToBeDone job)
-    {
-        doneJobs |= (int)job;
-        Debug.Log("DoneJobs : " + doneJobs);
-    }
-    private object[] ReleaseObjectWithDisable()
+    private object[] killGrab()
     {
         Vector3 res = new Vector3();
         Quaternion res2 = new Quaternion();
@@ -299,70 +280,70 @@ public class PCInteraction : MonoBehaviour
             );
         //Instruction
         TextUtil.Assign(ParaType.Instruction,
-            (int)Instruction.goToPC,
+            Instruction.goToPC,
             "이제 컴퓨터로 접근하세요",
             1.0f,
             "Helper",
             true
             );
         TextUtil.Assign(ParaType.Instruction,
-            (int)Instruction.assembleParts,
+            Instruction.assembleParts,
             "컴퓨터를 열고 부품을 조립하세요",
             3.0f,
             "Helper",
             true
             );
         TextUtil.Assign(ParaType.Instruction,
-            (int)Instruction.openPC,
+            Instruction.openPC,
             "닫혀있는 컴퓨터를 잡으면 자동으로 열립니다",
             1.0f,
             "Helper",
             false
             );
         TextUtil.Assign(ParaType.Instruction,
-            (int)Instruction.touchSSD,
+            Instruction.touchSSD,
             "인벤토리에서 SSD를 꺼내 슬롯에 갖다대보세요",
             3.0f,
             "Helper",
             true
             );
         TextUtil.Assign(ParaType.Instruction,
-            (int)Instruction.triggerSSD,
+            Instruction.triggerSSD,
             "이제 우측 트리거를 잡아 창착하세요!",
             1.0f,
             "Helper",
             false
             );
         TextUtil.Assign(ParaType.Instruction,
-            (int)Instruction.doneSSD,
+            Instruction.doneSSD,
             "SSD가 장착되었습니다",
             1.0f,
             "Helper",
             false
             );
         TextUtil.Assign(ParaType.Instruction,
-            (int)Instruction.touchUSB,
+            Instruction.touchUSB,
             "인벤토리에서 USB를 꺼내 전면 슬롯에 갖다대보세요",
             3.0f,
             "Helper",
             true
             );
         TextUtil.Assign(ParaType.Instruction,
-            (int)Instruction.triggerUSB,
+            Instruction.triggerUSB,
             "이제 우측 트리거를 잡아 창착하세요!",
             1.0f,
             "Helper",
             false
             );
         TextUtil.Assign(ParaType.Instruction,
-            (int)Instruction.doneUSB,
+            Instruction.doneUSB,
             "USB가 장착되었습니다",
             1.0f,
             "Helper",
             false
             );
         TextUtil.Assign(ParaType.Instruction,
-            (int)Instruction.touchButton,
+            Instruction.touchButton,
             "전원버튼을 눌러 켜봅시다!",
             0.1f,
             "Helper",

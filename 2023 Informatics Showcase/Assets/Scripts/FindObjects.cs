@@ -4,26 +4,26 @@ using UnityEngine;
 using static TextHandler.TextUtil;
 public class FindObjects : MonoBehaviour
 {
-    public static bool enableFind = false;
-    public static int doneJobs = 0;
-    public static bool successFind = false;
+    public static bool Enabled = false;
+    public static bool Success = false;
     public static GameObject minchulSlot;
     public static List<GameObject> mainSlots = new List<GameObject>();
+    public static TextHandler.TextUtil TextUill = new();
+    public static JobHandler JobUtil;
     // Start is called before the first frame update
     public enum JobsToBeDone
     {
-        confirmSSD = 0b0001,
-        confirmUSB = 0b0010,
-        getSSD = 0b0100,
-        getUSB = 0b1000,
+        confirmSSD,
+        confirmUSB,
+        getSSD,
+        getUSB
     }
     void Awake()
     {
-        enableFind = false;
-        successFind = false;
-        
-        doneJobs = 0;
+        Enabled = false;
+        Success = false;
         minchulSlot = GameObject.Find("Slot Minchul");
+        JobUtil = new(System.Enum.GetValues(typeof(JobsToBeDone)).Length, "FindObjects");
     }
     private void Start()
     {
@@ -37,9 +37,9 @@ public class FindObjects : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(enableFind)
+        if(Enabled)
         {
-            if((doneJobs & 0x3) != 0x3) for(int i = 0; i < 4; i++) // jobCheck(JobsToBeDone.getSSD,setJobDone(JobsToBeDone.getUSB));
+            if(!JobUtil.isDone(JobsToBeDone.confirmSSD, JobsToBeDone.confirmUSB)) for(int i = 0; i < 4; i++)
                 {
                 GameObject temp = FindGameObjectInChildWithTag(mainSlots[i], "Grabbable");
                 if(temp)
@@ -47,15 +47,15 @@ public class FindObjects : MonoBehaviour
                     switch (temp.name)
                     {
                         case "980Pro":
-                            if (!jobCheck(JobsToBeDone.getSSD))
+                            if (!JobUtil.isDone(JobsToBeDone.getSSD))
                             {
-                                setJobDone(JobsToBeDone.getSSD);
+                                JobUtil.setDone(JobsToBeDone.getSSD);
                             }
                             break;
                         case "memory":
-                            if (!jobCheck(JobsToBeDone.getUSB))
+                            if (!JobUtil.isDone(JobsToBeDone.getUSB))
                             {
-                                setJobDone(JobsToBeDone.getUSB);
+                                JobUtil.setDone(JobsToBeDone.getUSB);
                             }
                             break;
                     }
@@ -68,15 +68,15 @@ public class FindObjects : MonoBehaviour
                 switch (grabs.name)
                 {
                     case "980Pro":
-                        if (!jobCheck(JobsToBeDone.confirmSSD))
+                        if (!JobUtil.isDone(JobsToBeDone.confirmSSD))
                         {
-                            setJobDone(JobsToBeDone.confirmSSD);
+                            JobUtil.setDone(JobsToBeDone.confirmSSD);
                         }
                         break;
                     case "memory":
-                        if (!jobCheck(JobsToBeDone.confirmUSB))
+                        if (!JobUtil.isDone(JobsToBeDone.confirmUSB))
                         {
-                            setJobDone(JobsToBeDone.confirmUSB);
+                            JobUtil.setDone(JobsToBeDone.confirmUSB);
                         }
                         break;
                 }
@@ -84,9 +84,9 @@ public class FindObjects : MonoBehaviour
             if (trashes)
             {
             }
-            if (doneJobs == 0b1111) {
-                enableFind = false;
-                successFind = true;
+            if (JobUtil.allDone()) {
+                Enabled = false;
+                Success = true;
             }
         }
     }
@@ -103,19 +103,7 @@ public class FindObjects : MonoBehaviour
         trash.GetComponent<Rigidbody>().useGravity = true;
     }
 
-    bool jobCheck(JobsToBeDone job)
-    {
-        return (doneJobs & (int)job) == (int)job;
-    }
-    bool jobCheck(JobsToBeDone job1, JobsToBeDone job2)
-    {
-        return ((doneJobs & (int)job1) == (int)job1) && ((doneJobs & (int)job2) == (int)job2);
-    }
 
-    void setJobDone(JobsToBeDone job)
-    {
-        doneJobs |= (int)job;
-    }
     public GameObject FindGameObjectInChildWithTag(GameObject parent, string tag)
     {
         Transform t = parent.transform;

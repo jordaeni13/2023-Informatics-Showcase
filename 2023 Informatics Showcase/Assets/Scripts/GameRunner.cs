@@ -107,11 +107,11 @@ public class GameRunner : MonoBehaviour
         {
             TextHandler.AddActionTexts(Help.findParts, Help.findPartsTime);
             status = 1;
-            FindObjects.enableFind = true;
+            FindObjects.Enabled = true;
         }
         if(status == 1)
         {
-            if(FindObjects.successFind)
+            if(FindObjects.Success)
             {
                 TextHandler.AddActionText("다 찾았네요!", 3, false, null);
                 status = 999;
@@ -125,11 +125,11 @@ public class GameRunner : MonoBehaviour
         {
             PCInteraction.TextUtil.PlaySequence(ParaType.atStart, true);
             status = 1;
-            PCInteraction.pcInteractionEnabled = true;
+            PCInteraction.Enabled = true;
         }
         if (status == 1)
         {
-            if(PCInteraction.pcInteratcionSuccess)
+            if(PCInteraction.Success)
             {
                 TextHandler.AddActionText("잘 장착하셨습니다.", 3, true, null);
             }
