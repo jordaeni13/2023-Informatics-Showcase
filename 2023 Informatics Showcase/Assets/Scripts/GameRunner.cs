@@ -96,6 +96,7 @@ public class GameRunner : MonoBehaviour
     {
         if(status == 0)
         {
+            TextHandler.Delay(0.7f);
             InteractTeacher.TextUtil.PlaySequence(InteractTeacher.ParaType.atStart,true);
             InteractTeacher.Enabled = true;
             status = 1;
@@ -105,8 +106,6 @@ public class GameRunner : MonoBehaviour
             getReHelp();
             if (InteractTeacher.Success)
             {
-                
-                
                 if (TextHandler.Queue.Count == 0)
                 {
                     status = 999;

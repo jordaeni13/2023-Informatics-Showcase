@@ -8,8 +8,18 @@ public class FindObjects : MonoBehaviour
     public static bool Success = false;
     public static GameObject minchulSlot;
     public static List<GameObject> mainSlots = new List<GameObject>();
-    public static TextHandler.TextUtil TextUill = new();
+    public static TextHandler.TextUtil TextUtil = new();
     public static JobHandler JobUtil;
+    public static bool Inst = false;
+
+    public enum ParaType
+    {
+        Dialogue_USB,
+        Dialogue_SSD,
+        Dialogue_NotDone,
+        Dialogue_Trash,
+        Instruction
+    }
     // Start is called before the first frame update
     public enum JobsToBeDone
     {
@@ -23,6 +33,7 @@ public class FindObjects : MonoBehaviour
         Enabled = false;
         Success = false;
         minchulSlot = GameObject.Find("Slot Minchul");
+        TextUtil = new(System.Enum.GetValues(typeof(ParaType)).Length);
         JobUtil = new(System.Enum.GetValues(typeof(JobsToBeDone)).Length, "FindObjects");
     }
     private void Start()
@@ -32,6 +43,7 @@ public class FindObjects : MonoBehaviour
         {
             mainSlots.Add(GameObject.Find("Slot " + i));
         }
+        initTexts();
     }
 
     // Update is called once per frame
@@ -70,19 +82,54 @@ public class FindObjects : MonoBehaviour
                     case "980Pro":
                         if (!JobUtil.isDone(JobsToBeDone.confirmSSD))
                         {
+                            TextUtil.PlaySequence(ParaType.Dialogue_SSD, true);
                             JobUtil.setDone(JobsToBeDone.confirmSSD);
+                        }
+                        if (!JobUtil.isDone(JobsToBeDone.confirmUSB))
+                        {
+                            if (Inst == false)
+                            {
+                                TextUtil.PlaySingle(ParaType.Instruction, Instruction.noUSBConfirm, false);
+                                if (!JobUtil.isDone(JobsToBeDone.getUSB))
+                                {
+                                    TextUtil.PlaySingle(ParaType.Instruction, Instruction.noUSB, false);
+                                }
+                                Inst = true;
+                            }
                         }
                         break;
                     case "memory":
                         if (!JobUtil.isDone(JobsToBeDone.confirmUSB))
                         {
+                            TextUtil.PlaySequence(ParaType.Dialogue_USB, true);
                             JobUtil.setDone(JobsToBeDone.confirmUSB);
+                        }
+                        if (!JobUtil.isDone(JobsToBeDone.confirmSSD))
+                        {
+                            if (Inst == false)
+                            {
+                                TextUtil.PlaySingle(ParaType.Instruction, Instruction.noSSDConfirm, false);
+                                if (!JobUtil.isDone(JobsToBeDone.getSSD))
+                                {
+                                    TextUtil.PlaySingle(ParaType.Instruction, Instruction.noSSD, false);
+                                }
+                                Inst = true;
+                            }
                         }
                         break;
                 }
             }
+            else
+            {
+                Inst = false;
+            }
             if (trashes)
             {
+                trashes.transform.SetParent(null, false);
+                trashes.GetComponent<Transform>().SetPositionAndRotation(new Vector3(1000, 1000, 1000), new Quaternion(0, 0, 0, 0));
+                trashes.GetComponent<Rigidbody>().isKinematic = true;
+                trashes.SetActive(false);
+                TextUtil.PlaySequence(ParaType.Dialogue_Trash, true);
             }
             if (JobUtil.allDone()) {
                 Enabled = false;
@@ -118,5 +165,103 @@ public class FindObjects : MonoBehaviour
         }
 
         return null;
+    }
+
+    void initTexts()
+    {
+        initDialogue_Minchul_Trash();
+        initInstruction();
+        initDialogue_Minchul_SSD();
+        initDialogue_Minchul_USB();
+        initDialogue_Minchul_Trash();
+        
+    }
+    void initDialogue_Minchul_Trash()
+    {
+        TextUtil.AddParagraph(
+            ParaType.Dialogue_Trash,
+            "ÀÌ°Å ¸ÀÀÖ±ä ÇÑµ¥..",
+            0.2f,
+            "Dialogue:±è¹ÎÃ¶ ¼±»ý´Ô",
+            false
+            );
+        TextUtil.AddDelay(ParaType.Dialogue_Trash, 0.5f, "Dialogue:±è¹ÎÃ¶ ¼±»ý´Ô");
+        TextUtil.AddParagraph(
+            ParaType.Dialogue_Trash,
+            "ÇÊ¿äÇÑ°Ç ¾Æ´Ñ°Í °°¾Æ",
+            1f,
+            "Dialogue:±è¹ÎÃ¶ ¼±»ý´Ô",
+            false
+            );
+        TextUtil.AddParagraph(
+            ParaType.Dialogue_Trash,
+            "³Ü",
+            1f,
+            "Dialogue:³ª",
+            false
+            );
+    }
+    void initDialogue_Minchul_SSD()
+    {
+        TextUtil.AddParagraph(
+            ParaType.Dialogue_SSD,
+            "SSD Àß °¡Á®¿Ô±¸³ª",
+            1f,
+            "Dialogue:±è¹ÎÃ¶ ¼±»ý´Ô",
+            false
+            );
+
+    }
+    void initDialogue_Minchul_USB()
+    {
+        TextUtil.AddParagraph(
+            ParaType.Dialogue_USB,
+            "USB Àß °¡Á®¿Ô±¸³ª",
+            1f,
+            "Dialogue:±è¹ÎÃ¶ ¼±»ý´Ô",
+            false
+            );
+    }
+    enum Instruction
+    {
+        noSSDConfirm,
+        noUSBConfirm,
+        noSSD,
+        noUSB
+    }
+    void initInstruction()
+    {
+        TextUtil.Assign(
+            ParaType.Instruction,
+            Instruction.noSSDConfirm,
+            "±×·±µ¥ SSD´Â?",
+            0.5f,
+            "Dialogue:±è¹ÎÃ¶ ¼±»ý´Ô",
+            false
+            );
+        TextUtil.Assign(
+            ParaType.Instruction,
+            Instruction.noUSBConfirm,
+            "±×·±µ¥ USB´Â?",
+            0.5f,
+            "Dialogue:±è¹ÎÃ¶ ¼±»ý´Ô",
+            false
+            );
+        TextUtil.Assign(
+            ParaType.Instruction,
+            Instruction.noUSB,
+            "2ÇÐ³â 2¹ÝÀ¸·Î °¡¼­ USB¸¦ Ã£¾Æº¾½Ã´Ù",
+            0.5f,
+            "Helper",
+            false
+            );
+        TextUtil.Assign(
+            ParaType.Instruction,
+            Instruction.noSSD,
+            "1ÇÐ³â 1¹ÝÀ¸·Î °¡¼­ SSD¸¦ Ã£¾Æº¾½Ã´Ù",
+            0.5f,
+            "Helper",
+            false
+            );
     }
 }

@@ -14,6 +14,7 @@ public class TextHandler : MonoBehaviour
     private static string helper = "";
     private static string dialogue = "Dialogue";
     private static string sender = "Sender";
+    private static GameObject dialogueLine;
     private static Action func;
     private static List<SingleParagraph> queue = new List<SingleParagraph>(); //Actual Time
 
@@ -39,7 +40,8 @@ public class TextHandler : MonoBehaviour
         LastTime = 0;
         Time = 0;
         Count = 0;
-        
+        dialogueLine = GameObject.Find("DialogueLine");
+        dialogueLine.SetActive(false);
         Queue.Clear();
     }
 
@@ -86,6 +88,7 @@ public class TextHandler : MonoBehaviour
             //Debug.Log("showing");
             if (Time >= ShowTime)
             {
+                dialogueLine.SetActive(false);
                 Dialogue = "";
                 Sender = "";
                 Helper = "";
@@ -111,6 +114,7 @@ public class TextHandler : MonoBehaviour
             else
             {
                 Sender = Queue[0].Talker.Replace("Dialogue:", "");
+                dialogueLine.SetActive(true);
                 Dialogue = Queue[0].Text;
                 ShowTime = Queue[0].ValidTime;
                 func?.Invoke();

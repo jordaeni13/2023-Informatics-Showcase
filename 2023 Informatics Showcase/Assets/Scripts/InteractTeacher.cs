@@ -35,7 +35,7 @@ public class InteractTeacher : MonoBehaviour
             if (JobUtil.isPost(Jobs.InteractMinchul) && PCInteraction.hasName("Collider_Minchul"))
             {
                 TextUtil.PlaySequence(ParaType.Dialogue, true);
-                    JobUtil.setDone(Jobs.InteractMinchul);
+                JobUtil.setDone(Jobs.InteractMinchul);
             }
             if (JobUtil.allDone() && TextUtil.Available())
             {

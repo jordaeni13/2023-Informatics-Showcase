@@ -16,7 +16,7 @@ public class PCInteraction : MonoBehaviour
     public static GameObject insertedUSB;
     public bool isMessageDone = false;
     public SteamVR_Action_Vibration hapticAction;
-    public static readonly Vector3 initv = new Vector3(0, 0, 0);
+    public static readonly Vector3 initv = new(0, 0, 0);
     public static readonly Quaternion initq = new Quaternion(0, 0, 0, 0);
     public static object[] tempPos = { initv, initq };
     public static TextHandler.TextUtil TextUtil;
@@ -97,9 +97,14 @@ public class PCInteraction : MonoBehaviour
                         Debug.Log("SSD Inserted");
                         //Sound : 장착
                         TextUtil.PlaySingle(
-                            TextHandler.TextUtil.ParaType.Instruction,
+                            ParaType.Instruction,
                             (int)Instruction.doneSSD,
                             true
+                            );
+                        TextUtil.PlaySingle(
+                            ParaType.Instruction,
+                            Instruction.RTrigger,
+                            false
                             );
                         insertedSSD.SetActive(true);
                         killGrab();
@@ -283,6 +288,7 @@ public class PCInteraction : MonoBehaviour
         doneUSB,
         touchButton,
         noDevice,
+        RTrigger
     }
 
     void initText_atStart()
@@ -385,7 +391,13 @@ public class PCInteraction : MonoBehaviour
             "Helper",
             false
             );
-
+        TextUtil.Assign(ParaType.Instruction,
+            Instruction.RTrigger,
+            "오른쪽 트리거를 잡아보세요",
+            1f,
+            "Helper",
+            false
+            );
     }
     void initText_Dialogue_1()
     {
