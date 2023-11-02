@@ -3,10 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
-using static TextHandler.TextUtil;
 
 public class PCInteraction : MonoBehaviour
 {
+    public static bool Enabled = false;
+    public static bool Success = false;
+    public static bool isColliding = false;
+    public static List<GameObject> collidings = new List<GameObject>();
+    public static GameObject pcOpened;
+    public static GameObject pcClosed;
+    public static GameObject insertedSSD;
+    public static GameObject insertedUSB;
+    public bool isMessageDone = false;
+    public SteamVR_Action_Vibration hapticAction;
+    public static readonly Vector3 initv = new Vector3(0, 0, 0);
+    public static readonly Quaternion initq = new Quaternion(0, 0, 0, 0);
+    public static object[] tempPos = { initv, initq };
+    public static TextHandler.TextUtil TextUtil;
+    public static JobHandler JobUtil;
+    public enum ParaType
+    {
+        atStart,
+        //Dialogue,
+        Instruction,
+    }
     public enum JobsToBeDone
     {
         goToMulmi,
@@ -20,45 +40,12 @@ public class PCInteraction : MonoBehaviour
         insertUSB
     }
 
-    public static bool Enabled = false;
-    public static bool Success = false;
-    public static bool isColliding = false;
-    public static List<GameObject> collidings = new List<GameObject>();
-    public static GameObject pcOpened;
-    public static GameObject pcClosed;
-    public static GameObject insertedSSD;
-    public static GameObject insertedUSB;
-    public bool isMessageDone = false;
-    public SteamVR_Action_Vibration hapticAction;
-    public static readonly Vector3 init = new Vector3(0, 0, 0);
-    public static readonly Quaternion initq = new Quaternion(0, 0, 0, 0);
-    public static object[] tempPos = { init, initq };
-    public static TextHandler.TextUtil TextUtil = new();
-    public static JobHandler JobUtil;
-
-
-    // Start is called before the first frame update
     void Start()
     {
-        collidings.Clear();
-        Debug.Log("Hello PC");
-        Enabled = false;
-        isMessageDone = false;
-        Success = false;
-        pcOpened = GameObject.Find("PC_Opened");
-        pcClosed = GameObject.Find("PC_Closed");
-        insertedSSD = GameObject.Find("980");
-        insertedUSB = GameObject.Find("USB");
-        pcOpened.SetActive(true);
-        pcClosed.SetActive(true);
-        insertedSSD.SetActive(false);
-        insertedUSB.SetActive(false);
-        TextUtil = new TextHandler.TextUtil();
-        JobUtil = new(System.Enum.GetValues(typeof(JobsToBeDone)).Length, "PCInteraction");
+        init();
         initTexts();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Enabled)
@@ -75,12 +62,15 @@ public class PCInteraction : MonoBehaviour
                 JobUtil.setDone(JobsToBeDone.collidePC);
             }
 
-            if (GrabObj.objectInHand == pcClosed && JobUtil.isDone(JobsToBeDone.openPC))
+            if (JobUtil.isDone(JobsToBeDone.openPC) && GrabObj.objectInHand)
             {
-                TextUtil.PlaySingle(ParaType.Instruction, (int)Instruction.touchSSD, true);
-                tempPos = killGrab();
-                pcClosed.SetActive(false);
-                JobUtil.setDone(JobsToBeDone.openPC);
+                if (GrabObj.objectInHand == pcClosed)
+                {
+                    TextUtil.PlaySingle(ParaType.Instruction, (int)Instruction.touchSSD, true);
+                    tempPos = killGrab();
+                    pcClosed.SetActive(false);
+                    JobUtil.setDone(JobsToBeDone.openPC);
+                }
             }
 
             if(JobUtil.isPost(JobsToBeDone.collideSSD))
@@ -116,6 +106,7 @@ public class PCInteraction : MonoBehaviour
                         fixObject(pcClosed,tempPos);
                     }
             }
+
             if(JobUtil.isPost(JobsToBeDone.turnOnPcPostSSD))
             {
                 if (hasTag("Power") && Buttons.RTrigger())
@@ -136,6 +127,7 @@ public class PCInteraction : MonoBehaviour
                     }
                 }
             }
+
             if (JobUtil.isPost(JobsToBeDone.afterNoBoot))
             {
                 if (true)
@@ -143,6 +135,7 @@ public class PCInteraction : MonoBehaviour
                     JobUtil.setDone(JobsToBeDone.afterNoBoot);
                 }
             }
+
             if (JobUtil.isPost(JobsToBeDone.collideUSB))
             {
                 if (hasName("USB_Slot_Collider") && GrabObj.objectInHand != null) 
@@ -156,6 +149,7 @@ public class PCInteraction : MonoBehaviour
                             JobUtil.setDone(JobsToBeDone.collideUSB);
                         }
             }
+
             if(JobUtil.isPost(JobsToBeDone.insertUSB))
             {
                 if(hasName("USB_Slot_Collider") && GrabObj.objectInHand != null)
@@ -176,6 +170,7 @@ public class PCInteraction : MonoBehaviour
                             }
                         }
             }
+
             if(JobUtil.allDone())
             {
                 Success = true;
@@ -247,6 +242,24 @@ public class PCInteraction : MonoBehaviour
         object[] returner = { res, res2 };
         return returner;
     }
+    private void init()
+    {
+        collidings.Clear();
+        Debug.Log("Hello PC");
+        Enabled = false;
+        isMessageDone = false;
+        Success = false;
+        pcOpened = GameObject.Find("PC_Opened");
+        pcClosed = GameObject.Find("PC_Closed");
+        insertedSSD = GameObject.Find("980");
+        insertedUSB = GameObject.Find("USB");
+        pcOpened.SetActive(true);
+        pcClosed.SetActive(true);
+        insertedSSD.SetActive(false);
+        insertedUSB.SetActive(false);
+        TextUtil = new TextHandler.TextUtil(System.Enum.GetValues(typeof(ParaType)).Length);
+        JobUtil = new(System.Enum.GetValues(typeof(JobsToBeDone)).Length, "PCInteraction");
+    }
     enum Instruction
     {
         goToPC,
@@ -260,9 +273,9 @@ public class PCInteraction : MonoBehaviour
         doneUSB,
         touchButton
     }
-    void initTexts()
+
+    void initText_atStart()
     {
-        //atStart
         TextUtil.AddParagraph(
             ParaType.atStart,
             "정보실로 이동해봅시다",
@@ -278,6 +291,10 @@ public class PCInteraction : MonoBehaviour
             "Helper",
             true
             );
+    }
+    void initText_Instructions()
+    {
+
         //Instruction
         TextUtil.Assign(ParaType.Instruction,
             Instruction.goToPC,
@@ -349,5 +366,16 @@ public class PCInteraction : MonoBehaviour
             "Helper",
             false
             );
+
+    }
+    void initText_Dialogue()
+    {
+
+    }
+    void initTexts()
+    {
+        initText_atStart();
+        initText_Dialogue();
+        initText_Instructions();
     }
 }

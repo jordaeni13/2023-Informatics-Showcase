@@ -79,12 +79,16 @@ public class GameRunner : MonoBehaviour
     {
         if(status == 0)
         {
-            //오디오 재생 추가
-            GameObject.Find("speaker").GetComponent<AudioSource>().Play();
+            Broadcast.Enabled = true;
+            Broadcast.toPlay = true;
             status = 1;
         }
         if(status == 1)
         {
+            if(Broadcast.Success)
+            {
+                status = 999;
+            }
             if(TextHandler.Queue.Count == 0) status = 999;
         }
     }
@@ -131,7 +135,7 @@ public class GameRunner : MonoBehaviour
         {
             if(PCInteraction.Success)
             {
-                TextHandler.AddActionText("잘 장착하셨습니다.", 3, true, null);
+                TextHandler.AddActionText("잘 장착하셨습니다.", 3, false, null);
             }
             getReHelp();
         }

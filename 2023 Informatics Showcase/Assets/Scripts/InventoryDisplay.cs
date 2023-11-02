@@ -18,11 +18,11 @@ public class InventoryDisplay : MonoBehaviour
     
     void Update()
     {
-        if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.LeftHand))
+        if (Buttons.LTrigger())
         {
             inventoryUI.SetActive(true);
         }
-        else if (SteamVR_Actions.htc_viu.viu_press_33.GetStateUp(SteamVR_Input_Sources.LeftHand))
+        else if (Buttons.LTrigger())
         {
             inventoryUI.SetActive(false);
         }

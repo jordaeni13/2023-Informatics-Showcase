@@ -85,7 +85,7 @@ public class TextHandler : MonoBehaviour
             if (Queue.Count != 0)
             {
                 Showing = true;
-                if(!Queue[0].talker.Contains("Dialogue")) {
+                if(!Queue[0].Talker.Contains("Dialogue")) {
                     HelperOnInv = "";
                     if (Queue[0].Preserve == true)
                     {
@@ -98,11 +98,11 @@ public class TextHandler : MonoBehaviour
                     Queue.RemoveAt(0);
                 }
                 else {
-                    Sender = Queue[0].talker.replace("Dialogue:","");
+                    Sender = Queue[0].Talker.Replace("Dialogue:","");
                     Dialogue = Queue[0].Text;
                     ShowTime = Queue[0].ValidTime;
                     func?.Invoke();
-                    Debug.Log("Showing " + Sender + "'s Message" + Dialogue + " for " + (ShowTime - Time) + " secs");
+                    Debug.Log("Showing " + Sender + "'s Message " + Dialogue + " for " + (ShowTime - Time) + " secs");
                     Queue.RemoveAt(0);
                 }
             }
@@ -173,6 +173,17 @@ public class TextHandler : MonoBehaviour
                 Paragraphs[i].Clear();
             }
         }
+
+        public TextUtil(int length)
+        {
+            Paragraphs = new List<List<SingleParagraph>>();
+            Paragraphs.Clear();
+            for (int i = 0; i < length; i++)
+            {
+                Paragraphs.Add(new List<SingleParagraph>());
+                Paragraphs[i].Clear();
+            }
+        }
         public enum ParaType
         {
             atStart,
@@ -181,19 +192,19 @@ public class TextHandler : MonoBehaviour
         }
         public List<List<SingleParagraph>> Paragraphs;//Relative Time
 
-        public void AddParagraph(ParaType para, string text, float time, string talker, bool preserve)
+        public void AddParagraph(object para, string text, float time, string talker, bool preserve)
         {
             Paragraphs[(int)para].Add(new SingleParagraph(text, time, talker, preserve));
         }
-        public void AddParagraph(ParaType para, string text, float time, string talker, bool preserve, Action action)
+        public void AddParagraph(object para, string text, float time, string talker, bool preserve, Action action)
         {
             Paragraphs[(int)para].Add(new SingleParagraph(text, time, talker, preserve,action));
         }
-        public void AddDelay(ParaType para, float time, string talker)
+        public void AddDelay(object para, float time, string talker)
         {
             Paragraphs[(int)para].Add(new SingleParagraph("", time, talker, false));
         }
-        public void Assign(ParaType para, object index, string text, float time, string talker, bool preserve)
+        public void Assign(object para, object index, string text, float time, string talker, bool preserve)
         {
             while((int)index >= Paragraphs[(int)para].Count)
             {
@@ -201,7 +212,7 @@ public class TextHandler : MonoBehaviour
             }
             Paragraphs[(int)para][(int)index] = new SingleParagraph(text, time, talker, preserve);
         }
-        public void Assign(ParaType para, object index, string text, float time, string talker, bool preserve, Action action)
+        public void Assign(object para, object index, string text, float time, string talker, bool preserve, Action action)
         {
             while ((int)index >= Paragraphs[(int)para].Count)
             {
@@ -209,7 +220,7 @@ public class TextHandler : MonoBehaviour
             }
             Paragraphs[(int)para][(int)index] = new SingleParagraph(text, time, talker, preserve, action);
         }
-        public void PlaySequence(ParaType paraType, bool force)
+        public void PlaySequence(object paraType, bool force)
         {
             if (force) {
                 Clear();
@@ -222,7 +233,7 @@ public class TextHandler : MonoBehaviour
                               Paragraphs[(int)paraType][i].Func);
             }
         }
-        public void PlaySingle(ParaType paraType, int index, bool force)
+        public void PlaySingle(object paraType, int index, bool force)
         {
             if(force)
             {
