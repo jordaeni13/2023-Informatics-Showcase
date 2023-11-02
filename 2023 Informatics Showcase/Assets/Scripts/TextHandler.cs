@@ -276,5 +276,9 @@ public class TextHandler : MonoBehaviour
         {
             return Queue.Count == 0;
         }
+        public int Available(bool _Any)
+        {
+            return Queue.Count;
+        }
     }
 }

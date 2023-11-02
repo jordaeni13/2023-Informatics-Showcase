@@ -62,7 +62,7 @@ public class PCInteraction : MonoBehaviour
                 JobUtil.setDone(JobsToBeDone.collidePC);
             }
 
-            if (JobUtil.isDone(JobsToBeDone.openPC) && GrabObj.objectInHand)
+            if (JobUtil.isPost(JobsToBeDone.openPC) && GrabObj.objectInHand)
             {
                 if (GrabObj.objectInHand == pcClosed)
                 {
@@ -114,22 +114,19 @@ public class PCInteraction : MonoBehaviour
 
             if(JobUtil.isPost(JobsToBeDone.turnOnPcPostSSD))
             {
-                if (hasTag("Power") && Buttons.RTrigger())
+                if (hasName("PowerButton") && Buttons._RTrigger)
                 {
                     JobUtil.setDone(JobsToBeDone.turnOnPcPostSSD);
                     Debug.Log("Power Button Clicked");
-
+                    TextHandler.AddActionText("딸깍!", 0.5f, false, null); //지우셈
                 }
-                if (Buttons.RTrigger())
+                else if (Buttons._RTrigger)
                 {
-                    if (TextUtil.Available())
-                    {
                         TextUtil.PlaySingle(
                             ParaType.Instruction,
                             (int)Instruction.touchButton,
                             true
                             );
-                    }
                 }
             }
 
@@ -145,10 +142,8 @@ public class PCInteraction : MonoBehaviour
                     ParaType.Dialogue_1,
                     false
                     );
-                if (TextUtil.Available())
-                {
-                    JobUtil.setDone(JobsToBeDone.afterNoBoot);
-                }
+
+                JobUtil.setDone(JobsToBeDone.afterNoBoot);
             }
 
             if (JobUtil.isPost(JobsToBeDone.collideUSB))
@@ -380,7 +375,7 @@ public class PCInteraction : MonoBehaviour
         TextUtil.Assign(ParaType.Instruction,
             Instruction.touchButton,
             "전원버튼을 눌러 켜봅시다!",
-            0.1f,
+            0f,
             "Helper",
             false
             );
@@ -394,7 +389,7 @@ public class PCInteraction : MonoBehaviour
         TextUtil.Assign(ParaType.Instruction,
             Instruction.RTrigger,
             "오른쪽 트리거를 잡아보세요",
-            1f,
+            2f,
             "Helper",
             false
             );

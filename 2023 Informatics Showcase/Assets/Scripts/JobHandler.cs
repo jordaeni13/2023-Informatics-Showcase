@@ -39,6 +39,10 @@ public class JobHandler
     }
     public bool allDone()
     {
-        return end == doneJobs;
+        if (end - 1 == doneJobs)
+        {
+            Debug.Log(id + " : Job Done");
+        }
+        return end - 1 == doneJobs;
     }
 }

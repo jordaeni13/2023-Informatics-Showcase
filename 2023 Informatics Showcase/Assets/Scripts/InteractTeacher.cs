@@ -18,7 +18,7 @@ public class InteractTeacher : MonoBehaviour
     private void Awake()
     {
         TextUtil = new(System.Enum.GetValues(typeof(ParaType)).Length);
-        JobUtil = new(System.Enum.GetValues(typeof(ParaType)).Length, "InteractTeacher");
+        JobUtil = new(System.Enum.GetValues(typeof(Jobs)).Length, "InteractTeacher");
         Enabled = Success = false;
     }
     // Start is called before the first frame update
@@ -36,9 +36,11 @@ public class InteractTeacher : MonoBehaviour
             {
                 TextUtil.PlaySequence(ParaType.Dialogue, true);
                 JobUtil.setDone(Jobs.InteractMinchul);
+                
             }
             if (JobUtil.allDone() && TextUtil.Available())
             {
+                Enabled = false;
                 Success = true;
             }
         }

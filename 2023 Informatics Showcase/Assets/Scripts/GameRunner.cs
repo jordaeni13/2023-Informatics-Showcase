@@ -62,6 +62,7 @@ public class GameRunner : MonoBehaviour
     {
         if(status == 0)
         {
+            TextHandler.AddActionTexts(Help.initstory, Help.initstoryTime);
             TextHandler.AddActionTexts(Help.starter, Help.starterTime);
             status = 1;
         }
@@ -106,10 +107,7 @@ public class GameRunner : MonoBehaviour
             getReHelp();
             if (InteractTeacher.Success)
             {
-                if (TextHandler.Queue.Count == 0)
-                {
-                    status = 999;
-                }
+                status = 999;
             }
 
         }
@@ -177,8 +175,10 @@ namespace Texts
 {
     public class Help
     {
-        public static string[] starter = {"좌측 트리거를 이용해 인벤토리를 열어보세요", "" , "우측 측면 버튼을 이용해 물체를 잡아보세요", "" , "도움말은 여기 나타나며", "",  "다시 보고 싶다면 촤측 측면 버튼을 눌러주세요" , "준비가 되었다면 우측 트리거를 눌러봅시다"};
-        public static float[] starterTime = {3, 3, 3, 3, 3, 1, 3};
+        public static string[] initstory = { "\"학교의 학생 생활 사이트 관리에 염증을 느껴 휴학을 결심한지 어연 1년,\"", "\"주위의 압박에 마지못해 다시 학교에 나오게 됐다.\"", "\"요 몇일간 매일같이 서버 문제가 발생해서 큰 스트레스를 받았으나\"", "\"오늘만큼은 아무런 일이 아직 발생하지 않았다\"", "\"드디어 아무 일 없이 귀가를 하는 날이 온건가?\"" };
+        public static float[] initstoryTime = { 5, 3, 2, 3, 3 };
+        public static string[] starter = { "좌측 트리거를 이용해 인벤토리를 열어보세요", "", "우측 측면 버튼을 이용해 물체를 잡아보세요", "", "도움말은 여기 나타나며", "", "다시 보고 싶다면 촤측 측면 버튼을 눌러주세요", "준비가 되었다면 우측 트리거를 눌러봅시다" };
+        public static float[] starterTime = { 3, 3, 3, 3, 3, 2, 3 };
         public static string[] started = { "좋습니다", "", "이제 시작해볼까요?" };
         public static float[] startedTime = { 3, 1, 3 };
         public static string interactTeacher = "1층 교무실 앞에 김민철 선생님을 찾아 대화하세요";

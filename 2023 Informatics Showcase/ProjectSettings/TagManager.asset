@@ -12,6 +12,7 @@ TagManager:
   - GPU
   - trash
   - notInv
+  - power
   layers:
   - Default
   - TransparentFX
