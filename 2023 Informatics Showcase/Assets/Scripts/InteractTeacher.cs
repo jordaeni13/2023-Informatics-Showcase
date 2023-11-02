@@ -30,17 +30,14 @@ public class InteractTeacher : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (enabled)
+        if (Enabled)
         {
             if (JobUtil.isPost(Jobs.InteractMinchul) && PCInteraction.hasName("Collider_Minchul"))
             {
                 TextUtil.PlaySequence(ParaType.Dialogue, true);
-                if (TextUtil.Available())
-                {
                     JobUtil.setDone(Jobs.InteractMinchul);
-                }
             }
-            if (JobUtil.allDone())
+            if (JobUtil.allDone() && TextUtil.Available())
             {
                 Success = true;
             }

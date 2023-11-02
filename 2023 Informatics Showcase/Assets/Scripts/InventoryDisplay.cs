@@ -18,11 +18,11 @@ public class InventoryDisplay : MonoBehaviour
     
     void Update()
     {
-        if (Buttons.LTrigger())
+        if (Buttons.LTrigger_Dn())
         {
             inventoryUI.SetActive(true);
         }
-        else if (Buttons.LTrigger())
+        else if (Buttons.LTrigger_Up())
         {
             inventoryUI.SetActive(false);
         }

@@ -12,8 +12,8 @@ public class TextHandler : MonoBehaviour
     private static float showTime = 0;
     private static string helperOnInv = "";
     private static string helper = "";
-    private static string dialogue = "";
-    private static string sender = "";
+    private static string dialogue = "Dialogue";
+    private static string sender = "Sender";
     private static Action func;
     private static List<SingleParagraph> queue = new List<SingleParagraph>(); //Actual Time
 
@@ -54,7 +54,15 @@ public class TextHandler : MonoBehaviour
     {
         //Debug.Log("Msg :" + txt);
         if (LastTime < Time) LastTime = Time;
-        SingleParagraph temp = new SingleParagraph(txt, LastTime + show_time, preserve, func);
+        SingleParagraph temp = new SingleParagraph(txt, LastTime + show_time, "Helper" , preserve, func);
+        LastTime = LastTime + show_time;
+        Queue.Add(temp);
+    }
+    public static void AddActionText(string txt, float show_time, string talker, bool preserve, Action func)
+    {
+        //Debug.Log("Msg :" + txt);
+        if (LastTime < Time) LastTime = Time;
+        SingleParagraph temp = new SingleParagraph(txt, LastTime + show_time, talker, preserve, func);
         LastTime = LastTime + show_time;
         Queue.Add(temp);
     }
@@ -87,7 +95,7 @@ public class TextHandler : MonoBehaviour
         if (!Showing && Queue.Count != 0) //바로 표시되게
         {
             Showing = true;
-            if (!Queue[0].Talker.Contains("Dialogue"))
+            if (!Queue[0].Talker.Contains("Dialogue:"))
             {
                 HelperOnInv = "";
                 if (Queue[0].Preserve == true)
@@ -232,6 +240,7 @@ public class TextHandler : MonoBehaviour
             {
                 AddActionText(Paragraphs[(int)paraType][i].Text,
                               Paragraphs[(int)paraType][i].ValidTime,
+                              Paragraphs[(int)paraType][i].Talker,
                               Paragraphs[(int)paraType][i].Preserve,
                               Paragraphs[(int)paraType][i].Func);
             }
@@ -244,6 +253,7 @@ public class TextHandler : MonoBehaviour
             }
             AddActionText(Paragraphs[(int)paraType][(int)index].Text,
                           Paragraphs[(int)paraType][(int)index].ValidTime,
+                          Paragraphs[(int)paraType][(int)index].Talker,
                           Paragraphs[(int)paraType][(int)index].Preserve,
                           Paragraphs[(int)paraType][(int)index].Func);
         }
