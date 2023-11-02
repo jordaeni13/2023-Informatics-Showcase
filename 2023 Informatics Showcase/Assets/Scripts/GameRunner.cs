@@ -67,7 +67,7 @@ public class GameRunner : MonoBehaviour
         }
         if(status == 1)
         {
-            if (SteamVR_Actions.htc_viu.viu_press_33.GetStateDown(SteamVR_Input_Sources.RightHand) && TextHandler.Queue.Count == 0)
+            if (Buttons.RTrigger() && TextHandler.Queue.Count == 0)
                 {
                     TextHandler.AddActionTexts(Help.started, Help.startedTime);
                     status = 999;
@@ -96,13 +96,23 @@ public class GameRunner : MonoBehaviour
     {
         if(status == 0)
         {
-            TextHandler.AddActionText(Help.interactTeacher,Help.interactTeacherTime, true, null);
+            InteractTeacher.TextUtil.PlaySequence(InteractTeacher.ParaType.atStart,true);
+            InteractTeacher.Enabled = true;
             status = 1;
         }
         if(status == 1)
         {
             getReHelp();
-            if (TextHandler.Queue.Count == 0) status = 999; // µð¹ö±ë¿ë
+            if (InteractTeacher.Success)
+            {
+                
+                
+                if (TextHandler.Queue.Count == 0)
+                {
+                    status = 999;
+                }
+            }
+
         }
     }
     void FindParts()
@@ -127,7 +137,7 @@ public class GameRunner : MonoBehaviour
     {
         if(status == 0)
         {
-            PCInteraction.TextUtil.PlaySequence(ParaType.atStart, true);
+            PCInteraction.TextUtil.PlaySequence(PCInteraction.ParaType.atStart, true);
             status = 1;
             PCInteraction.Enabled = true;
         }

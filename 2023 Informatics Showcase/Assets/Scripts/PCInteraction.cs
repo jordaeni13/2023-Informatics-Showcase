@@ -24,7 +24,7 @@ public class PCInteraction : MonoBehaviour
     public enum ParaType
     {
         atStart,
-        //Dialogue,
+        Dialogue_1,
         Instruction,
     }
     public enum JobsToBeDone
@@ -130,7 +130,17 @@ public class PCInteraction : MonoBehaviour
 
             if (JobUtil.isPost(JobsToBeDone.afterNoBoot))
             {
-                if (true)
+                TextUtil.PlaySingle(
+                    ParaType.Instruction,
+                    Instruction.noDevice,
+                    true
+                    );
+                TextUtil.Delay(1);
+                TextUtil.PlaySequence(
+                    ParaType.Dialogue_1,
+                    false
+                    );
+                if (TextUtil.Available())
                 {
                     JobUtil.setDone(JobsToBeDone.afterNoBoot);
                 }
@@ -207,7 +217,7 @@ public class PCInteraction : MonoBehaviour
     {
         collidings.Remove(collision.gameObject);
     }
-    bool hasTag(string tag)
+    public static bool hasTag(string tag)
     {
         foreach(GameObject collision in collidings)
         {
@@ -216,7 +226,7 @@ public class PCInteraction : MonoBehaviour
         return false;
     }
 
-    bool hasName(string name)
+    public static bool hasName(string name)
     {
         foreach(GameObject collision in collidings)
         {
@@ -271,14 +281,16 @@ public class PCInteraction : MonoBehaviour
         touchUSB,
         triggerUSB,
         doneUSB,
-        touchButton
+        touchButton,
+        noDevice,
     }
 
     void initText_atStart()
     {
+
         TextUtil.AddParagraph(
             ParaType.atStart,
-            "정보실로 이동해봅시다",
+            "부품을 다 모았으니\n정보실로 이동해봅시다",
             3.0f,
             "Helper",
             true
@@ -366,16 +378,40 @@ public class PCInteraction : MonoBehaviour
             "Helper",
             false
             );
+        TextUtil.Assign(ParaType.Instruction,
+            Instruction.noDevice,
+            "컴퓨터가 켜지지 않네요!",
+            2f,
+            "Helper",
+            false
+            );
 
     }
-    void initText_Dialogue()
+    void initText_Dialogue_1()
     {
-
+        TextUtil.AddParagraph(
+            ParaType.Dialogue_1,
+            "왜 켜지지 않을까?",
+            2,
+            "Dialogue:나",
+            false
+            );
+        TextUtil.AddDelay(
+            ParaType.Dialogue_1,
+            1, 
+            "Dialogue:나"
+            );
+        TextUtil.AddParagraph(ParaType.Dialogue_1,
+            "USB를 꽂아야되구나!",
+            2,
+            "Dialogue:나",
+            false
+            );
     }
     void initTexts()
     {
         initText_atStart();
-        initText_Dialogue();
+        initText_Dialogue_1();
         initText_Instructions();
     }
 }

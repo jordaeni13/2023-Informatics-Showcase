@@ -66,6 +66,11 @@ public class TextHandler : MonoBehaviour
             AddActionText(txts[i], i < show_times.Length ? show_times[i] : 3, true, null);
         }
     }
+
+    public static void Delay(float show_time)
+    {
+        AddActionText("", show_time, false, null);
+    }
     public static void UpdateText()
     {
         if (Showing)
@@ -79,32 +84,30 @@ public class TextHandler : MonoBehaviour
                 Showing = false;
             }
         }
-        else
+        if (!Showing && Queue.Count != 0) //바로 표시되게
         {
-            //Debug.Log("!showing");
-            if (Queue.Count != 0)
+            Showing = true;
+            if (!Queue[0].Talker.Contains("Dialogue"))
             {
-                Showing = true;
-                if(!Queue[0].Talker.Contains("Dialogue")) {
-                    HelperOnInv = "";
-                    if (Queue[0].Preserve == true)
-                    {
-                        HelperOnInv = Queue[0].Text;
-                    }
-                    Helper = Queue[0].Text;
-                    ShowTime = Queue[0].ValidTime;
-                    func?.Invoke();
-                    Debug.Log("Showing " + Helper + " for " + (ShowTime - Time) + " secs");
-                    Queue.RemoveAt(0);
+                HelperOnInv = "";
+                if (Queue[0].Preserve == true)
+                {
+                    HelperOnInv = Queue[0].Text;
                 }
-                else {
-                    Sender = Queue[0].Talker.Replace("Dialogue:","");
-                    Dialogue = Queue[0].Text;
-                    ShowTime = Queue[0].ValidTime;
-                    func?.Invoke();
-                    Debug.Log("Showing " + Sender + "'s Message " + Dialogue + " for " + (ShowTime - Time) + " secs");
-                    Queue.RemoveAt(0);
-                }
+                Helper = Queue[0].Text;
+                ShowTime = Queue[0].ValidTime;
+                func?.Invoke();
+                Debug.Log("Showing " + Helper + " for " + (ShowTime - Time) + " secs");
+                Queue.RemoveAt(0);
+            }
+            else
+            {
+                Sender = Queue[0].Talker.Replace("Dialogue:", "");
+                Dialogue = Queue[0].Text;
+                ShowTime = Queue[0].ValidTime;
+                func?.Invoke();
+                Debug.Log("Showing " + Sender + "'s Message " + Dialogue + " for " + (ShowTime - Time) + " secs");
+                Queue.RemoveAt(0);
             }
         }
     }
@@ -233,16 +236,16 @@ public class TextHandler : MonoBehaviour
                               Paragraphs[(int)paraType][i].Func);
             }
         }
-        public void PlaySingle(object paraType, int index, bool force)
+        public void PlaySingle(object paraType, object index, bool force)
         {
             if(force)
             {
                 Clear();
             }
-            AddActionText(Paragraphs[(int)paraType][index].Text,
-                          Paragraphs[(int)paraType][index].ValidTime,
-                          Paragraphs[(int)paraType][index].Preserve,
-                          Paragraphs[(int)paraType][index].Func);
+            AddActionText(Paragraphs[(int)paraType][(int)index].Text,
+                          Paragraphs[(int)paraType][(int)index].ValidTime,
+                          Paragraphs[(int)paraType][(int)index].Preserve,
+                          Paragraphs[(int)paraType][(int)index].Func);
         }
         public void Clear()
         {
@@ -250,6 +253,10 @@ public class TextHandler : MonoBehaviour
             LastTime = Time;
             Helper = HelperOnInv = "";
             Showing = false;
+        }
+        public void Delay(float show_time)
+        {
+            TextHandler.Delay(show_time);
         }
         public bool Available()
         {
