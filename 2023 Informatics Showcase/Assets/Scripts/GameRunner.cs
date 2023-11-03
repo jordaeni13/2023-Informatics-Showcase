@@ -19,7 +19,6 @@ public class GameRunner : MonoBehaviour
         seq = -1;
         Debug.Log("Game Started");
         TextHandler.AddActionText("Game Started", 2.0f, false, null);
-        
     }
 
     // Update is called once per frame
@@ -143,6 +142,7 @@ public class GameRunner : MonoBehaviour
             if(PCInteraction.Success)
             {
                 TextHandler.AddActionText("전원버튼을 눌러 다시 켜봅시다.", 3, false, null);
+                status = 999;
             }
             getReHelp();
         }
@@ -152,12 +152,15 @@ public class GameRunner : MonoBehaviour
     {
         if (status == 0)
         {
-            TextHandler.AddActionTexts(Help.install, Help.installTime);
+            InstallProcess.Enabled = true;
             status = 1;
         }
         if (status == 1)
         {
-       
+            if(InstallProcess.Success == true)
+            {
+                status = 999;
+            }
         }
     }
     void GoHome()

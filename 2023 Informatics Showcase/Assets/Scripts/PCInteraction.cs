@@ -106,6 +106,7 @@ public class PCInteraction : MonoBehaviour
                             Instruction.RTrigger,
                             false
                             );
+                        Buttons._RTrigger = false; // ´ÙÀ½ Áßº¹ ¹æÁö
                         insertedSSD.SetActive(true);
                         killGrab();
                         fixObject(pcClosed,tempPos);
@@ -116,9 +117,8 @@ public class PCInteraction : MonoBehaviour
             {
                 if (hasName("PowerButton") && Buttons._RTrigger)
                 {
+                    MonitorHandler.BootProcess();
                     JobUtil.setDone(JobsToBeDone.turnOnPcPostSSD);
-                    Debug.Log("Power Button Clicked");
-                    TextHandler.AddActionText("µþ±ï!", 0.5f, false, null); //Áö¿ì¼À
                 }
                 else if (Buttons._RTrigger)
                 {
@@ -130,7 +130,7 @@ public class PCInteraction : MonoBehaviour
                 }
             }
 
-            if (JobUtil.isPost(JobsToBeDone.afterNoBoot))
+            if (JobUtil.isPost(JobsToBeDone.afterNoBoot) && MonitorHandler.Done == true)
             {
                 TextUtil.PlaySingle(
                     ParaType.Instruction,

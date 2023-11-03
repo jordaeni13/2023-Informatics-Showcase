@@ -9,6 +9,7 @@ public class Broadcast : MonoBehaviour
     public static GameObject speaker;
     public static AudioClip audioClip;
     public static bool toPlay;
+    public static TextHandler.TextUtil textUtil = new();
     // Start is called before the first frame update
     void Start()
     {
