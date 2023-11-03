@@ -142,7 +142,7 @@ public class GameRunner : MonoBehaviour
         {
             if(PCInteraction.Success)
             {
-                TextHandler.AddActionText("잘 장착하셨습니다.", 3, false, null);
+                TextHandler.AddActionText("전원버튼을 눌러 다시 켜봅시다.", 3, false, null);
             }
             getReHelp();
         }
