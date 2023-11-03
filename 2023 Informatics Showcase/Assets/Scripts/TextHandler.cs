@@ -15,7 +15,7 @@ public class TextHandler : MonoBehaviour
     private static string dialogue = "Dialogue";
     private static string sender = "Sender";
     private static GameObject dialogueLine;
-    private static Action func;
+    private static Action<int> func;
     private static List<SingleParagraph> queue = new List<SingleParagraph>(); //Actual Time
 
     public static float Time { get => time; set => time = value; }
@@ -52,19 +52,19 @@ public class TextHandler : MonoBehaviour
         UpdateText();
         TimeCounter();
     }
-    public static void AddActionText(string txt, float show_time, bool preserve, Action func)
+    public static void AddActionText(string txt, float show_time, bool preserve, Action<int> func, int Index)
     {
         //Debug.Log("Msg :" + txt);
         if (LastTime < Time) LastTime = Time;
-        SingleParagraph temp = new SingleParagraph(txt, LastTime + show_time, "Helper" , preserve, func);
+        SingleParagraph temp = new SingleParagraph(txt, LastTime + show_time, "Helper" , preserve, func, Index);
         LastTime = LastTime + show_time;
         Queue.Add(temp);
     }
-    public static void AddActionText(string txt, float show_time, string talker, bool preserve, Action func)
+    public static void AddActionText(string txt, float show_time, string talker, bool preserve, Action<int> func, int Index)
     {
         //Debug.Log("Msg :" + txt);
         if (LastTime < Time) LastTime = Time;
-        SingleParagraph temp = new SingleParagraph(txt, LastTime + show_time, talker, preserve, func);
+        SingleParagraph temp = new SingleParagraph(txt, LastTime + show_time, talker, preserve, func, Index);
         LastTime = LastTime + show_time;
         Queue.Add(temp);
     }
@@ -73,13 +73,13 @@ public class TextHandler : MonoBehaviour
     {
         for (int i = 0; i < txts.Length; i++)
         {
-            AddActionText(txts[i], i < show_times.Length ? show_times[i] : 3, true, null);
+            AddActionText(txts[i], i < show_times.Length ? show_times[i] : 3, true, null, 0);
         }
     }
 
     public static void Delay(float show_time)
     {
-        AddActionText("", show_time, false, null);
+        AddActionText("", show_time, false, null, 0);
     }
     public static void UpdateText()
     {
@@ -107,7 +107,7 @@ public class TextHandler : MonoBehaviour
                 }
                 Helper = Queue[0].Text;
                 ShowTime = Queue[0].ValidTime;
-                func?.Invoke();
+                func?.Invoke(Queue[0].Index);
                 Debug.Log("Showing " + Helper + " for " + (ShowTime - Time) + " secs");
                 Queue.RemoveAt(0);
             }
@@ -117,7 +117,7 @@ public class TextHandler : MonoBehaviour
                 dialogueLine.SetActive(true);
                 Dialogue = Queue[0].Text;
                 ShowTime = Queue[0].ValidTime;
-                func?.Invoke();
+                func?.Invoke(Queue[0].Index);
                 Debug.Log("Showing " + Sender + "'s Message " + Dialogue + " for " + (ShowTime - Time) + " secs");
                 Queue.RemoveAt(0);
             }
@@ -147,33 +147,35 @@ public class TextHandler : MonoBehaviour
             this.Talker = talker;
             this.Preserve = preserve;
         }
-        public SingleParagraph(string text, float validTime, bool preserve, Action func)
+        public SingleParagraph(string text, float validTime, bool preserve, Action<int> func, int Index)
         {
             this.Text = text;
             this.ValidTime = validTime;
             this.Talker = "Helper";
             this.Preserve = preserve;
             this.Func = func;
+            this.Index = Index;
         }
-        public SingleParagraph(string text, float validTime, string talker, bool preserve, Action func)
+        public SingleParagraph(string text, float validTime, string talker, bool preserve, Action<int> func, int Index)
         {
             this.Text = text;
             this.ValidTime = validTime;
             this.Talker = talker;
             this.Preserve = preserve;
             this.Func = func;
+            this.Index = Index;
         }
         private string text;
         private float validTime;
         private string talker;
         private bool preserve;
-        private Action func = null;
-
+        private Action<int> func = null;
+        public int Index;
         public string Text { get => text; set => text = value; }
         public float ValidTime { get => validTime; set => validTime = value; }
         public string Talker { get => talker; set => talker = value; }
         public bool Preserve { get => preserve; set => preserve = value; }
-        public Action Func { get => func; set => func = value; }
+        public Action<int> Func { get => func; set => func = value; }
     }
 
     public class TextUtil
@@ -211,9 +213,9 @@ public class TextHandler : MonoBehaviour
         {
             Paragraphs[(int)para].Add(new SingleParagraph(text, time, talker, preserve));
         }
-        public void AddParagraph(object para, string text, float time, string talker, bool preserve, Action action)
+        public void AddParagraph(object para, string text, float time, string talker, bool preserve, Action<int> action, int index)
         {
-            Paragraphs[(int)para].Add(new SingleParagraph(text, time, talker, preserve,action));
+            Paragraphs[(int)para].Add(new SingleParagraph(text, time, talker, preserve, action ,index));
         }
         public void AddDelay(object para, float time, string talker)
         {
@@ -227,13 +229,13 @@ public class TextHandler : MonoBehaviour
             }
             Paragraphs[(int)para][(int)index] = new SingleParagraph(text, time, talker, preserve);
         }
-        public void Assign(object para, object index, string text, float time, string talker, bool preserve, Action action)
+        public void Assign(object para, object index, string text, float time, string talker, bool preserve, Action<int> action, int Index)
         {
             while ((int)index >= Paragraphs[(int)para].Count)
             {
                 Paragraphs[(int)para].Add(null);
             }
-            Paragraphs[(int)para][(int)index] = new SingleParagraph(text, time, talker, preserve, action);
+            Paragraphs[(int)para][(int)index] = new SingleParagraph(text, time, talker, preserve, action, Index);
         }
         public void PlaySequence(object paraType, bool force)
         {
@@ -246,7 +248,8 @@ public class TextHandler : MonoBehaviour
                               Paragraphs[(int)paraType][i].ValidTime,
                               Paragraphs[(int)paraType][i].Talker,
                               Paragraphs[(int)paraType][i].Preserve,
-                              Paragraphs[(int)paraType][i].Func);
+                              Paragraphs[(int)paraType][i].Func,
+                              Paragraphs[(int)paraType][i].Index);
             }
         }
         public void PlaySingle(object paraType, object index, bool force)
@@ -259,7 +262,8 @@ public class TextHandler : MonoBehaviour
                           Paragraphs[(int)paraType][(int)index].ValidTime,
                           Paragraphs[(int)paraType][(int)index].Talker,
                           Paragraphs[(int)paraType][(int)index].Preserve,
-                          Paragraphs[(int)paraType][(int)index].Func);
+                          Paragraphs[(int)paraType][(int)index].Func,
+                          Paragraphs[(int)paraType][(int)index].Index);
         }
         public void Clear()
         {

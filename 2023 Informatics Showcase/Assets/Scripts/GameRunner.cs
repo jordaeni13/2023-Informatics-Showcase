@@ -12,13 +12,13 @@ public class GameRunner : MonoBehaviour
     private int status = 0;
     private int seq = -1;
     private TextHandler.TextUtil textUtil = new();
+    private bool statum = 0;
     void Start()
     {
         time = 0;
         status = 999;
         seq = -1;
         Debug.Log("Game Started");
-        TextHandler.AddActionText("Game Started", 2.0f, false, null);
     }
 
     // Update is called once per frame
@@ -123,7 +123,7 @@ public class GameRunner : MonoBehaviour
         {
             if(FindObjects.Success)
             {
-                TextHandler.AddActionText("다 찾았네요!", 3, false, null);
+                TextHandler.AddActionText("다 찾았네요!", 3, false, null, 0);
                 status = 999;
             }
             getReHelp();
@@ -134,6 +134,7 @@ public class GameRunner : MonoBehaviour
         if(status == 0)
         {
             PCInteraction.TextUtil.PlaySequence(PCInteraction.ParaType.atStart, true);
+            waypointHandler.setTarget(GameObject.Find("multimedia").transform);
             status = 1;
             PCInteraction.Enabled = true;
         }
@@ -141,7 +142,7 @@ public class GameRunner : MonoBehaviour
         {
             if(PCInteraction.Success)
             {
-                TextHandler.AddActionText("전원버튼을 눌러 다시 켜봅시다.", 3, false, null);
+                TextHandler.AddActionText("전원버튼을 눌러 다시 켜봅시다.", 3, false, null, 0);
                 status = 999;
             }
             getReHelp();
@@ -159,13 +160,37 @@ public class GameRunner : MonoBehaviour
         {
             if(InstallProcess.Success == true)
             {
+                TextHandler.AddActionText("완벽합니다!", 3, false, null, 0);
+                TextHandler.AddActionText("모든 과정을 완료하였습니다.", 5, false, null, 0);
+                TextHandler.AddActionText("선생님을 만나 집에 갑시다", 5, false, null, 0);
                 status = 999;
             }
         }
     }
     void GoHome()
     {
+        
+        if (status == 0)
+        {
+            status = 1;
+        }
+        if (status == 1)
+        {
+            if (PCInteraction.hasName("Collider_Minchul") && statum == false)
+            {
+                InteractTeacher.talkplay(8);
+                statum = true;
+                status = 2;
+            }
 
+        }
+        if( status == 2)
+        {
+            if (!InteractTeacher.MinchulVoice.GetComponent<AudioSource>().isPlaying)
+            {
+                TextHandler.AddActionText("The End", 180, false, null, 0);
+            }
+        }
     }
 
     void getReHelp()

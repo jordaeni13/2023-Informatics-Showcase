@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MonitorHandler : MonoBehaviour
 {
-    public static Texture img;
+    public static RawImage img;
     public static bool Success;
     public static bool Done;
     public static bool Showing;
@@ -21,7 +22,7 @@ public class MonitorHandler : MonoBehaviour
     void Start()
     {
         Time = 0;
-        img = GetComponent<Texture>();
+        img = GetComponent<RawImage>();
         Done = true;
         Lister = new();
         Lister.Clear();
@@ -74,7 +75,7 @@ public class MonitorHandler : MonoBehaviour
         {
             Boot();
         }
-        Lister[Lister.Count-1].End = true;
+        Lister[^1].End = true;
         Done = false;
     }
     public static void Splash()
@@ -86,33 +87,38 @@ public class MonitorHandler : MonoBehaviour
         string path = parentPath + "Assets\\MonitorImages\\no_medium.jpg";
         
         Lister.Add(new SingleScreen(null, 5));
-        Lister[Lister.Count - 1].Text = LoadPNG(path);
+        Lister[^1].Text = LoadPNG(path);
     }
     public static void Boot()
     {
         string path = "";
         for(int i = 0; i < (int)(2161/30); i++)
         {
-            path = parentPath + string.Format("Assets\\MonitorImages\\bootImgs\\out{0}.png", i);
+            path = parentPath + string.Format("Assets\\MonitorImages\\bootImgs\\out{0}.png", i*30);
             
             Lister.Add(
                 new SingleScreen(null, 0.5f)
             );
-            Lister[Lister.Count - 1].Text = LoadPNG(path);
+            Lister[^1].Text = LoadPNG(path);
         }
+    }
+
+    public static void addBlank()
+    {
+        string path = parentPath + "Assets\\MonitorImages\\Blank.png";
+        
+        Lister.Add(new SingleScreen(null, 5));
+        Lister[^1].Text = LoadPNG(path);
     }
 
     public static void Blank()
     {
         string path = parentPath + "Assets\\MonitorImages\\Blank.png";
-        
-        Lister.Add(new SingleScreen(null, 5));
-        Lister[Lister.Count - 1].Text = LoadPNG(path);
     }
 
     public static void SetDisplay(Texture text)
     {
-        img = text;
+        img.texture = text;
     }
 
     public static Texture2D LoadPNG(string filePath)

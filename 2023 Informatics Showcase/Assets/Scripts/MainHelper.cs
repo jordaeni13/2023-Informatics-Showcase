@@ -6,7 +6,7 @@ using TMPro;
 public class MainHelper : MonoBehaviour
 {
     // Start is called before the first frame update
-    TextMeshProUGUI text;
+    public static TextMeshProUGUI text;
     void Start()
     {
         text = GetComponent<TextMeshProUGUI>();

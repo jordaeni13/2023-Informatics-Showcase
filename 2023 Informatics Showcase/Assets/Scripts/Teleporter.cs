@@ -47,6 +47,7 @@ public class Teleporter : MonoBehaviour
 
         //Move
         StartCoroutine(MoveRig(cameraRig, translateVector));
+        waypointHandler.updated = true;
     }
 
     private IEnumerator MoveRig(Transform cameraRig, Vector3 translation)

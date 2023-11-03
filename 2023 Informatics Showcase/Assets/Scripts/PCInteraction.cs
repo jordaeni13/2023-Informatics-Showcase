@@ -53,6 +53,7 @@ public class PCInteraction : MonoBehaviour
             if (hasName("¸Ö¹Ì½Ç") && JobUtil.isPost(JobsToBeDone.goToMulmi))
             {
                 TextUtil.PlaySingle(ParaType.Instruction, (int)Instruction.goToPC, true);
+                waypointHandler.setTarget(pcOpened.transform);
                 JobUtil.setDone(JobsToBeDone.goToMulmi);
             }
 
@@ -68,6 +69,7 @@ public class PCInteraction : MonoBehaviour
                 {
                     TextUtil.PlaySingle(ParaType.Instruction, (int)Instruction.touchSSD, true);
                     tempPos = killGrab();
+                    waypointHandler.setActive(false);
                     pcClosed.SetActive(false);
                     JobUtil.setDone(JobsToBeDone.openPC);
                 }

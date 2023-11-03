@@ -62,16 +62,23 @@ public class FindObjects : MonoBehaviour
                             if (!JobUtil.isDone(JobsToBeDone.getSSD))
                             {
                                 JobUtil.setDone(JobsToBeDone.getSSD);
+                                waypointHandler.setTarget(GameObject.Find("Minchul").transform);
                             }
                             break;
                         case "memory":
                             if (!JobUtil.isDone(JobsToBeDone.getUSB))
                             {
                                 JobUtil.setDone(JobsToBeDone.getUSB);
+                                waypointHandler.setTarget(GameObject.Find("Minchul").transform);
                             }
                             break;
                     }
                 }
+            }
+            else
+            {
+                waypointHandler.setActive(true);
+                waypointHandler.setTarget(minchulSlot.transform);
             }
             GameObject grabs = FindGameObjectInChildWithTag(minchulSlot, "Grabbable");
             GameObject trashes = FindGameObjectInChildWithTag(minchulSlot, "trash");
@@ -93,6 +100,7 @@ public class FindObjects : MonoBehaviour
                                 if (!JobUtil.isDone(JobsToBeDone.getUSB))
                                 {
                                     TextUtil.PlaySingle(ParaType.Instruction, Instruction.noUSB, false);
+                                    waypointHandler.setTarget(GameObject.Find("2_2").transform);
                                 }
                                 Inst = true;
                             }
@@ -112,6 +120,7 @@ public class FindObjects : MonoBehaviour
                                 if (!JobUtil.isDone(JobsToBeDone.getSSD))
                                 {
                                     TextUtil.PlaySingle(ParaType.Instruction, Instruction.noSSD, false);
+                                    waypointHandler.setTarget(GameObject.Find("1_1").transform);
                                 }
                                 Inst = true;
                             }
@@ -181,15 +190,17 @@ public class FindObjects : MonoBehaviour
         TextUtil.AddParagraph(
             ParaType.Dialogue_Trash,
             "ÀÌ°Å ¸ÀÀÖ±ä ÇÑµ¥..",
-            0.2f,
+            3f,
             "Dialogue:±è¹ÎÃ¶ ¼±»ý´Ô",
-            false
+            false,
+            InteractTeacher.talkplay,
+            7
             );
         TextUtil.AddDelay(ParaType.Dialogue_Trash, 0.5f, "Dialogue:±è¹ÎÃ¶ ¼±»ý´Ô");
         TextUtil.AddParagraph(
             ParaType.Dialogue_Trash,
             "ÇÊ¿äÇÑ°Ç ¾Æ´Ñ°Í °°¾Æ",
-            1f,
+            2f,
             "Dialogue:±è¹ÎÃ¶ ¼±»ý´Ô",
             false
             );
@@ -206,9 +217,11 @@ public class FindObjects : MonoBehaviour
         TextUtil.AddParagraph(
             ParaType.Dialogue_SSD,
             "SSD Àß °¡Á®¿Ô±¸³ª",
-            1f,
+            3f,
             "Dialogue:±è¹ÎÃ¶ ¼±»ý´Ô",
-            false
+            false,
+            InteractTeacher.talkplay,
+            5
             );
 
     }
@@ -217,9 +230,11 @@ public class FindObjects : MonoBehaviour
         TextUtil.AddParagraph(
             ParaType.Dialogue_USB,
             "USB Àß °¡Á®¿Ô±¸³ª",
-            1f,
+            3f,
             "Dialogue:±è¹ÎÃ¶ ¼±»ý´Ô",
-            false
+            false,
+            InteractTeacher.talkplay,
+            6
             );
     }
     enum Instruction

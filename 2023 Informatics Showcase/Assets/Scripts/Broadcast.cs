@@ -34,6 +34,8 @@ public class Broadcast : MonoBehaviour
                 }
                 else
                 {
+                    waypointHandler.setActive(true);
+                    waypointHandler.setTarget(GameObject.Find("Minchul").transform);
                     Success = true;
                 }
             }

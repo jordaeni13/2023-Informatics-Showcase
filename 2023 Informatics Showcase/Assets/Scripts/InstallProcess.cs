@@ -16,7 +16,13 @@ public class InstallProcess : MonoBehaviour
     {
         if(Enabled)
         {
+            
             MonitorHandler.BootProcess();
+            MonitorHandler.Success = false;
+            if(MonitorHandler.Success && MonitorHandler.Done)
+            {
+                Success = true;
+            }
         }
     }
 }
