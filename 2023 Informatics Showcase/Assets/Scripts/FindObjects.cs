@@ -266,7 +266,7 @@ public class FindObjects : MonoBehaviour
             ParaType.Instruction,
             Instruction.noUSB,
             "2학년 2반으로 가서 USB를 찾아봅시다",
-            0.5f,
+            3f,
             "Helper",
             false
             );
@@ -274,7 +274,7 @@ public class FindObjects : MonoBehaviour
             ParaType.Instruction,
             Instruction.noSSD,
             "1학년 1반으로 가서 SSD를 찾아봅시다",
-            0.5f,
+            3f,
             "Helper",
             false
             );

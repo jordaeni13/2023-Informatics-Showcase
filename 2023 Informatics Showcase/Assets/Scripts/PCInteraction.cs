@@ -119,6 +119,7 @@ public class PCInteraction : MonoBehaviour
             {
                 if (hasName("PowerButton") && Buttons._RTrigger)
                 {
+                    MonitorHandler.Success = false;
                     MonitorHandler.BootProcess();
                     JobUtil.setDone(JobsToBeDone.turnOnPcPostSSD);
                 }

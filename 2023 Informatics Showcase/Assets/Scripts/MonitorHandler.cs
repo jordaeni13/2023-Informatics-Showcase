@@ -15,6 +15,9 @@ public class MonitorHandler : MonoBehaviour
     public static float LastTime;
     public static List<SingleScreen> Lister = new();
 
+    public static GameObject noboot = GameObject.Find("Display");
+    public static GameObject booted = GameObject.Find("Booted");
+
     public static readonly string parentPath = "C:\\";
 
     public static float Time = 0;
@@ -22,9 +25,12 @@ public class MonitorHandler : MonoBehaviour
     void Start()
     {
         Time = 0;
+        GameObject noboot = GameObject.Find("Display");
+        GameObject booted = GameObject.Find("Booted");
         img = GetComponent<RawImage>();
         Done = true;
         Lister = new();
+        Blank();
         Lister.Clear();
     }
 
@@ -59,24 +65,34 @@ public class MonitorHandler : MonoBehaviour
             {
                 Done = true;
                 Success = true;
-                
+                UnityEngine.Debug.Log("Success");
             }
             Lister.RemoveAt(0);
         }
     }
     public static void BootProcess()
     {
+        Done = false;
+        Success = false;
         Splash();
-        if (!(PCInteraction.JobUtil.isDone(PCInteraction.JobsToBeDone.insertUSB) || PCInteraction.JobUtil.isDone(PCInteraction.JobsToBeDone.insertSSD)))
+
+        if (!(PCInteraction.JobUtil.isDone(PCInteraction.JobsToBeDone.insertUSB) && PCInteraction.JobUtil.isDone(PCInteraction.JobsToBeDone.insertSSD)))
         {
-            NoBoot();
+            //NoBoot();
+            noboot.SetActive(true);
+            booted.SetActive(false);
+
         }
         else
         {
-            Boot();
+            //Boot();
+            booted.SetActive(false);
+            noboot.SetActive(true);
         }
-        Lister[^1].End = true;
-        Done = false;
+        LastTime = Time + 5;
+        Success = true;
+        //Lister[^1].End = true;
+        Done = true;
     }
     public static void Splash()
     {
@@ -92,7 +108,7 @@ public class MonitorHandler : MonoBehaviour
     public static void Boot()
     {
         string path = "";
-        for(int i = 0; i < (int)(2161/30); i++)
+        for(int i = 1; i < (int)(2161/30); i++)
         {
             path = parentPath + string.Format("Assets\\MonitorImages\\bootImgs\\out{0}.png", i*30);
             
@@ -113,7 +129,15 @@ public class MonitorHandler : MonoBehaviour
 
     public static void Blank()
     {
+        /*
         string path = parentPath + "Assets\\MonitorImages\\Blank.png";
+        SetDisplay(LoadPNG(path));
+        Time = 0;
+        Lister.Clear();
+        */
+
+        booted.SetActive(false);
+        noboot.SetActive(false);
     }
 
     public static void SetDisplay(Texture text)

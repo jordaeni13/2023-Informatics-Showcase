@@ -117,7 +117,7 @@ public class TextHandler : MonoBehaviour
                 dialogueLine.SetActive(true);
                 Dialogue = Queue[0].Text;
                 ShowTime = Queue[0].ValidTime;
-                func?.Invoke(Queue[0].Index);
+                Queue[0].Func?.Invoke(Queue[0].Index);
                 Debug.Log("Showing " + Sender + "'s Message " + Dialogue + " for " + (ShowTime - Time) + " secs");
                 Queue.RemoveAt(0);
             }

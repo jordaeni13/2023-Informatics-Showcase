@@ -12,12 +12,13 @@ public class GameRunner : MonoBehaviour
     private int status = 0;
     private int seq = -1;
     private TextHandler.TextUtil textUtil = new();
-    private bool statum = 0;
+    private bool statum = false;
     void Start()
     {
         time = 0;
         status = 999;
         seq = -1;
+        statum = false;
         Debug.Log("Game Started");
     }
 
@@ -158,13 +159,13 @@ public class GameRunner : MonoBehaviour
         }
         if (status == 1)
         {
-            if(InstallProcess.Success == true)
+            if (Buttons._RTrigger && PCInteraction.hasName("PowerButton"))
             {
                 TextHandler.AddActionText("완벽합니다!", 3, false, null, 0);
                 TextHandler.AddActionText("모든 과정을 완료하였습니다.", 5, false, null, 0);
                 TextHandler.AddActionText("선생님을 만나 집에 갑시다", 5, false, null, 0);
-                status = 999;
             }
+            status = 999;
         }
     }
     void GoHome()

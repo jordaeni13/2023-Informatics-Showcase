@@ -29,8 +29,9 @@ public class InteractTeacher : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        audioClipArray = new AudioClip[9];
         initTexts();
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < 9; i++)
         {
             audioClipArray[i] = audioClipImsi[i];
         }
@@ -81,7 +82,7 @@ public class InteractTeacher : MonoBehaviour
             ,talkplay
             ,0
             );
-        TextUtil.AddDelay(ParaType.Dialogue, 1, "");
+        TextUtil.AddDelay(ParaType.Dialogue, 0.5f, "");
         TextUtil.AddParagraph(
             ParaType.Dialogue,
             "아니 글쎄 그 한철이가 SSD에 에너지드링크를 쏟은 모양이야.\n너도 알다시피 컴퓨터 부품 중 한개만 고장나도 아예 작동을 멈추잖아",
@@ -91,7 +92,7 @@ public class InteractTeacher : MonoBehaviour
             talkplay,
             1
             );
-        TextUtil.AddDelay(ParaType.Dialogue, 1, "");
+        TextUtil.AddDelay(ParaType.Dialogue, 0.5f, "");
         TextUtil.AddParagraph(
             ParaType.Dialogue,
             "그래서 너가 부품을 교체하고, OS도 다시 깔아줬으면 좋겠어",
@@ -101,7 +102,7 @@ public class InteractTeacher : MonoBehaviour
             talkplay,
             2
             );
-        TextUtil.AddDelay(ParaType.Dialogue, 1, "");
+        TextUtil.AddDelay(ParaType.Dialogue, 0.5f, "");
         TextUtil.AddParagraph(
             ParaType.Dialogue,
             "넵",
@@ -109,7 +110,7 @@ public class InteractTeacher : MonoBehaviour
             "Dialogue:나",
             false
             );
-        TextUtil.AddDelay(ParaType.Dialogue, 1, "");
+        TextUtil.AddDelay(ParaType.Dialogue, 0.5f, "");
         TextUtil.AddParagraph(
             ParaType.Dialogue,
             "그 설치 USB는 아까 서준이한테 줬었는데",
@@ -119,7 +120,7 @@ public class InteractTeacher : MonoBehaviour
             talkplay,
             3
             );
-        TextUtil.AddDelay(ParaType.Dialogue, 1, "");
+        TextUtil.AddDelay(ParaType.Dialogue, 0.5f, "");
         TextUtil.AddParagraph(
             ParaType.Dialogue,
             "혹시 서준이가 USB 안줬니?",
@@ -128,7 +129,7 @@ public class InteractTeacher : MonoBehaviour
             false
 
             );
-        TextUtil.AddDelay(ParaType.Dialogue, 1.5f, "");
+        TextUtil.AddDelay(ParaType.Dialogue, 1f, "");
 
         TextUtil.AddParagraph(
             ParaType.Dialogue,
@@ -137,7 +138,7 @@ public class InteractTeacher : MonoBehaviour
             "Dialogue:김민철 선생님",
             false
             );
-        TextUtil.AddDelay(ParaType.Dialogue, 1, "");
+        TextUtil.AddDelay(ParaType.Dialogue, 0.5f, "");
         TextUtil.AddParagraph(
             ParaType.Dialogue,
             "아이고 서준아..",
@@ -147,7 +148,7 @@ public class InteractTeacher : MonoBehaviour
             talkplay,
             4
             );
-        TextUtil.AddDelay(ParaType.Dialogue, 1, "");
+        TextUtil.AddDelay(ParaType.Dialogue, 0.5f, "");
         TextUtil.AddParagraph(
             ParaType.Dialogue,
             "SSD는 1학년 1반에 있던것 같고..",
@@ -155,7 +156,7 @@ public class InteractTeacher : MonoBehaviour
             "Dialogue:나",
             false
             );
-        TextUtil.AddDelay(ParaType.Dialogue, 1, "");
+        TextUtil.AddDelay(ParaType.Dialogue, 0.5f, "");
         TextUtil.AddParagraph(
             ParaType.Dialogue,
             "USB는 서준이 자리에 있을것 같아요.",
@@ -164,7 +165,7 @@ public class InteractTeacher : MonoBehaviour
             false
             );
         
-        TextUtil.AddDelay(ParaType.Dialogue, 1, "");
+        TextUtil.AddDelay(ParaType.Dialogue, 0.5f, "");
         TextUtil.AddParagraph(
             ParaType.Dialogue,
             "그러면 그것들 가져와서 확인받고 고쳐라",
@@ -184,10 +185,14 @@ public class InteractTeacher : MonoBehaviour
 
     public static Action<int> talkplay = delegate (int index)
     {
-        talk(audioClipArray[index]);
+        if (audioClipArray[index] != null)
+        {
+            talk(audioClipArray[index]);
+        }
     };
     public static void talk(AudioClip audioClip)
     {
+        Debug.Log("Playing...");
         AudioSource minchulVoice = MinchulVoice.GetComponent<AudioSource>();
         minchulVoice.Stop();
         minchulVoice.clip = audioClip;
